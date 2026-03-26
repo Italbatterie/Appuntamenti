@@ -119,46 +119,7 @@
     }
 
     /* Config strip */
-    .config-strip {
-      background: var(--yellow-light);
-      border-bottom: 1px solid #F0D860;
-      padding: 0.85rem 2rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    .config-strip label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--yellow-text);
-      white-space: nowrap;
-      font-family: 'DM Mono', monospace;
-      letter-spacing: 0.04em;
-    }
-    .config-strip input {
-      flex: 1;
-      padding: 7px 12px;
-      font-size: 0.78rem;
-      font-family: 'DM Mono', monospace;
-      border: 1px solid #D4C060;
-      border-radius: var(--radius-sm);
-      background: var(--white);
-      color: var(--gray-900);
-      outline: none;
-    }
-    .config-strip input:focus {
-      border-color: var(--yellow);
-      box-shadow: 0 0 0 2px rgba(232,184,0,0.2);
-    }
-    .config-tag {
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 3px 9px;
-      background: var(--yellow);
-      color: var(--yellow-text);
-      border-radius: 20px;
-      white-space: nowrap;
-    }
+
 
     /* Form body */
     .card-body {
@@ -371,12 +332,7 @@
       </div>
     </div>
 
-    <!-- Google Sheets URL config -->
-    <div class="config-strip">
-      <label for="sheets-url">WEB APP URL</label>
-      <input type="url" id="sheets-url" placeholder="https://script.google.com/macros/s/.../exec" />
-      <span class="config-tag">Google Sheets</span>
-    </div>
+    <input type="hidden" id="sheets-url" value="https://script.google.com/macros/s/AKfycbzozBZl49FkMiNe5kFpV1bI_hD8sKt1nF8zbL5MxIgdND-Z3TTP_YBZ8umuuJwn6DXxgg/exec" />
 
     <!-- Form -->
     <div class="card-body">
@@ -385,17 +341,25 @@
 
         <p class="section-label">Dati cliente</p>
         <div class="form-grid">
-          <div class="form-group">
-            <label for="nome">Nome <span class="req">*</span></label>
-            <input type="text" id="nome" placeholder="Mario" required />
+          <div class="form-group full">
+            <label for="azienda">Nome azienda <span class="req">*</span></label>
+            <input type="text" id="azienda" placeholder="es. Trasporti Rossi S.r.l." required />
+          </div>
+          <div class="form-group full">
+            <label for="indirizzo">Indirizzo</label>
+            <input type="text" id="indirizzo" placeholder="Via Roma 12, 20100 Milano" />
           </div>
           <div class="form-group">
-            <label for="cognome">Cognome <span class="req">*</span></label>
-            <input type="text" id="cognome" placeholder="Rossi" required />
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" placeholder="Mario" />
           </div>
           <div class="form-group">
-            <label for="telefono">Telefono <span class="req">*</span></label>
-            <input type="tel" id="telefono" placeholder="+39 333 123 4567" required />
+            <label for="cognome">Cognome</label>
+            <input type="text" id="cognome" placeholder="Rossi" />
+          </div>
+          <div class="form-group">
+            <label for="telefono">Telefono</label>
+            <input type="tel" id="telefono" placeholder="+39 333 123 4567" />
           </div>
           <div class="form-group">
             <label for="email">Email</label>
@@ -492,19 +456,13 @@
       weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
     });
 
-    // Status dot based on URL input
-    const sheetsInput = document.getElementById('sheets-url');
+    // Status dot — sempre attivo
     const statusDot = document.getElementById('status-dot');
     const statusText = document.getElementById('status-text');
-    sheetsInput.addEventListener('input', () => {
-      if (sheetsInput.value.trim().startsWith('https://script.google.com')) {
-        statusDot.classList.add('active');
-        statusText.textContent = 'Collegato a Google Sheets';
-      } else {
-        statusDot.classList.remove('active');
-        statusText.textContent = 'In attesa configurazione URL';
-      }
-    });
+    statusDot.classList.add('active');
+    statusText.textContent = 'Collegato a Google Sheets';
+
+    const SHEETS_URL = document.getElementById('sheets-url').value;
 
     // Form submission
     const form = document.getElementById('appointment-form');
@@ -517,17 +475,10 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const url = sheetsInput.value.trim();
+      const url = SHEETS_URL;
 
       toastOk.classList.remove('show');
       toastErr.classList.remove('show');
-
-      if (!url) {
-        document.getElementById('error-msg').textContent = 'Inserisci prima l\'URL del Web App Google Sheets nella barra in alto.';
-        toastErr.classList.add('show');
-        sheetsInput.focus();
-        return;
-      }
 
       // Loading state
       submitBtn.disabled = true;
@@ -537,6 +488,8 @@
 
       const payload = {
         timestamp: new Date().toLocaleString('it-IT'),
+        azienda: document.getElementById('azienda').value.trim(),
+        indirizzo: document.getElementById('indirizzo').value.trim(),
         nome: document.getElementById('nome').value.trim(),
         cognome: document.getElementById('cognome').value.trim(),
         telefono: document.getElementById('telefono').value.trim(),
