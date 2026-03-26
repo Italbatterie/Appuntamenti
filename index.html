@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prenotazione Servizio Scacciapensieri</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --yellow: #E8B800;
+      --yellow-dark: #C9A000;
+      --yellow-light: #FFF8D6;
+      --yellow-text: #5A4400;
+      --black: #1A1A1A;
+      --gray-900: #2C2C2C;
+      --gray-700: #4A4A4A;
+      --gray-500: #7A7A7A;
+      --gray-300: #C8C8C8;
+      --gray-100: #F4F4F2;
+      --gray-50: #FAFAF8;
+      --white: #FFFFFF;
+      --success: #1D7A4A;
+      --success-bg: #E6F5EE;
+      --error: #9B2C2C;
+      --error-bg: #FDF0F0;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--gray-100);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--gray-900);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 4rem;
+    }
+
+    /* Animated stripe bar at top */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--yellow) 0px,
+        var(--yellow) 24px,
+        var(--black) 24px,
+        var(--black) 32px
+      );
+      background-size: 200% 100%;
+      animation: stripe 8s linear infinite;
+      z-index: 100;
+    }
+    @keyframes stripe {
+      from { background-position: 0 0; }
+      to { background-position: 200% 0; }
+    }
+
+    .card {
+      width: 100%;
+      max-width: 700px;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gray-300);
+      overflow: hidden;
+      margin-top: 2rem;
+      animation: fadeUp 0.4s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header */
+    .card-header {
+      background: var(--black);
+      padding: 1.75rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .battery-icon {
+      width: 52px;
+      height: 52px;
+      background: var(--yellow);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .battery-icon svg {
+      width: 30px;
+      height: 30px;
+    }
+    .header-text h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.3;
+    }
+    .header-text p {
+      font-size: 0.8rem;
+      color: var(--gray-300);
+      margin-top: 3px;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.04em;
+    }
+
+    /* Config strip */
+    .config-strip {
+      background: var(--yellow-light);
+      border-bottom: 1px solid #F0D860;
+      padding: 0.85rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .config-strip label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--yellow-text);
+      white-space: nowrap;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.04em;
+    }
+    .config-strip input {
+      flex: 1;
+      padding: 7px 12px;
+      font-size: 0.78rem;
+      font-family: 'DM Mono', monospace;
+      border: 1px solid #D4C060;
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      color: var(--gray-900);
+      outline: none;
+    }
+    .config-strip input:focus {
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 2px rgba(232,184,0,0.2);
+    }
+    .config-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 9px;
+      background: var(--yellow);
+      color: var(--yellow-text);
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* Form body */
+    .card-body {
+      padding: 2rem;
+    }
+
+    .section-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--gray-300);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--gray-700);
+    }
+    label .req {
+      color: var(--yellow-dark);
+      margin-left: 2px;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    input[type="email"],
+    input[type="date"],
+    input[type="time"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 9px 12px;
+      font-size: 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-sm);
+      background: var(--gray-50);
+      color: var(--gray-900);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--yellow);
+      background: var(--white);
+      box-shadow: 0 0 0 3px rgba(232,184,0,0.15);
+    }
+    input:hover:not(:focus), select:hover:not(:focus), textarea:hover:not(:focus) {
+      border-color: var(--gray-500);
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A7A7A' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.5;
+    }
+
+    /* Submit button */
+    .btn-submit {
+      width: 100%;
+      padding: 13px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--yellow);
+      color: var(--yellow-text);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.15s, transform 0.1s;
+      margin-top: 0.5rem;
+    }
+    .btn-submit:hover { background: var(--yellow-dark); }
+    .btn-submit:active { transform: scale(0.99); }
+    .btn-submit:disabled {
+      background: var(--gray-300);
+      color: var(--gray-500);
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--yellow-text);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast messages */
+    .toast {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      margin-top: 14px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border: 1px solid;
+      animation: fadeUp 0.25s ease both;
+    }
+    .toast.show { display: flex; }
+    .toast.success {
+      background: var(--success-bg);
+      color: var(--success);
+      border-color: #A8D8BC;
+    }
+    .toast.error {
+      background: var(--error-bg);
+      color: var(--error);
+      border-color: #F5BBBB;
+    }
+
+    /* Footer */
+    .card-footer {
+      background: var(--gray-50);
+      border-top: 1px solid var(--gray-100);
+      padding: 0.75rem 2rem;
+      font-size: 0.72rem;
+      color: var(--gray-500);
+      font-family: 'DM Mono', monospace;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-footer .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--gray-300);
+      display: inline-block;
+      margin-right: 6px;
+    }
+    .card-footer .dot.active { background: #3DAA6A; }
+
+    @media (max-width: 560px) {
+      body { padding: 1rem 0.5rem 3rem; }
+      .card-header { padding: 1.25rem; }
+      .card-body { padding: 1.25rem; }
+      .config-strip { padding: 0.75rem 1.25rem; flex-wrap: wrap; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: 1; }
+      .card-footer { flex-direction: column; gap: 4px; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar"></div>
+
+  <div class="card">
+
+    <!-- Header -->
+    <div class="card-header">
+      <div class="battery-icon">
+        <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="9" width="22" height="15" rx="2.5" fill="#1A1A1A"/>
+          <rect x="7" y="7" width="5" height="3" rx="1" fill="#1A1A1A"/>
+          <rect x="18" y="7" width="5" height="3" rx="1" fill="#1A1A1A"/>
+          <rect x="6" y="14" width="5" height="5" rx="1.5" fill="#E8B800"/>
+          <rect x="13" y="14" width="5" height="5" rx="1.5" fill="#E8B800"/>
+          <rect x="20" y="14" width="3" height="5" rx="1" fill="#E8B800"/>
+          <rect x="1" y="12" width="2" height="5" rx="1" fill="#1A1A1A"/>
+          <rect x="27" y="12" width="2" height="5" rx="1" fill="#1A1A1A"/>
+        </svg>
+      </div>
+      <div class="header-text">
+        <h1>Prenotazione servizio scacciapensieri</h1>
+        <p>Controllo batterie · Parco mezzi</p>
+      </div>
+    </div>
+
+    <!-- Google Sheets URL config -->
+    <div class="config-strip">
+      <label for="sheets-url">WEB APP URL</label>
+      <input type="url" id="sheets-url" placeholder="https://script.google.com/macros/s/.../exec" />
+      <span class="config-tag">Google Sheets</span>
+    </div>
+
+    <!-- Form -->
+    <div class="card-body">
+
+      <form id="appointment-form" autocomplete="off">
+
+        <p class="section-label">Dati cliente</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="nome">Nome <span class="req">*</span></label>
+            <input type="text" id="nome" placeholder="Mario" required />
+          </div>
+          <div class="form-group">
+            <label for="cognome">Cognome <span class="req">*</span></label>
+            <input type="text" id="cognome" placeholder="Rossi" required />
+          </div>
+          <div class="form-group">
+            <label for="telefono">Telefono <span class="req">*</span></label>
+            <input type="tel" id="telefono" placeholder="+39 333 123 4567" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="mario.rossi@email.com" />
+          </div>
+        </div>
+
+        <p class="section-label">Dettagli appuntamento</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="data">Data <span class="req">*</span></label>
+            <input type="date" id="data" required />
+          </div>
+          <div class="form-group">
+            <label for="ora">Ora <span class="req">*</span></label>
+            <input type="time" id="ora" required />
+          </div>
+          <div class="form-group full">
+            <label for="servizio">Tipo di servizio <span class="req">*</span></label>
+            <select id="servizio" required>
+              <option value="" disabled selected>Seleziona servizio...</option>
+              <option value="Controllo batteria singola">Controllo batteria singola</option>
+              <option value="Controllo parco mezzi completo">Controllo parco mezzi completo</option>
+              <option value="Primo controllo programmato">Primo controllo programmato</option>
+              <option value="Controllo periodico">Controllo periodico</option>
+              <option value="Sostituzione batteria">Sostituzione batteria</option>
+              <option value="Consulenza flotta">Consulenza flotta</option>
+              <option value="Altro">Altro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="num-veicoli">N° veicoli da controllare</label>
+            <input type="number" id="num-veicoli" placeholder="es. 5" min="1" />
+          </div>
+          <div class="form-group">
+            <label for="tipo-veicoli">Tipo di veicoli</label>
+            <select id="tipo-veicoli">
+              <option value="" disabled selected>Seleziona...</option>
+              <option value="Auto">Auto</option>
+              <option value="Moto">Moto</option>
+              <option value="Veicoli commerciali">Veicoli commerciali</option>
+              <option value="Misto">Misto</option>
+              <option value="Altro">Altro</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label for="note">Note / informazioni aggiuntive</label>
+            <textarea id="note" placeholder="Descrivere eventuali problemi noti, modelli di veicolo, esigenze particolari..."></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submit-btn">
+          <svg id="btn-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2v10M9 12l-3-3M9 12l3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 14h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <span id="btn-text">Registra appuntamento</span>
+          <span class="spinner" id="btn-spinner"></span>
+        </button>
+
+        <div class="toast" id="toast-success">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Appuntamento registrato con successo in Google Sheets!
+        </div>
+        <div class="toast" id="toast-error">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 5v4M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span id="error-msg">Errore nell'invio. Controlla l'URL del Web App.</span>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="card-footer">
+      <span><span class="dot" id="status-dot"></span><span id="status-text">In attesa configurazione URL</span></span>
+      <span id="footer-date"></span>
+    </div>
+
+  </div>
+
+  <script>
+    // Set today as min date
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('data').setAttribute('min', today);
+
+    // Footer date
+    document.getElementById('footer-date').textContent = new Date().toLocaleDateString('it-IT', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+
+    // Status dot based on URL input
+    const sheetsInput = document.getElementById('sheets-url');
+    const statusDot = document.getElementById('status-dot');
+    const statusText = document.getElementById('status-text');
+    sheetsInput.addEventListener('input', () => {
+      if (sheetsInput.value.trim().startsWith('https://script.google.com')) {
+        statusDot.classList.add('active');
+        statusText.textContent = 'Collegato a Google Sheets';
+      } else {
+        statusDot.classList.remove('active');
+        statusText.textContent = 'In attesa configurazione URL';
+      }
+    });
+
+    // Form submission
+    const form = document.getElementById('appointment-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const btnText = document.getElementById('btn-text');
+    const btnIcon = document.getElementById('btn-icon');
+    const spinner = document.getElementById('btn-spinner');
+    const toastOk = document.getElementById('toast-success');
+    const toastErr = document.getElementById('toast-error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const url = sheetsInput.value.trim();
+
+      toastOk.classList.remove('show');
+      toastErr.classList.remove('show');
+
+      if (!url) {
+        document.getElementById('error-msg').textContent = 'Inserisci prima l\'URL del Web App Google Sheets nella barra in alto.';
+        toastErr.classList.add('show');
+        sheetsInput.focus();
+        return;
+      }
+
+      // Loading state
+      submitBtn.disabled = true;
+      btnText.textContent = 'Invio in corso...';
+      btnIcon.style.display = 'none';
+      spinner.style.display = 'inline-block';
+
+      const payload = {
+        timestamp: new Date().toLocaleString('it-IT'),
+        nome: document.getElementById('nome').value.trim(),
+        cognome: document.getElementById('cognome').value.trim(),
+        telefono: document.getElementById('telefono').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        data: document.getElementById('data').value,
+        ora: document.getElementById('ora').value,
+        servizio: document.getElementById('servizio').value,
+        num_veicoli: document.getElementById('num-veicoli').value || '',
+        tipo_veicoli: document.getElementById('tipo-veicoli').value || '',
+        note: document.getElementById('note').value.trim()
+      };
+
+      try {
+        await fetch(url, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        toastOk.classList.add('show');
+        form.reset();
+        document.getElementById('data').setAttribute('min', today);
+        document.getElementById('servizio').value = '';
+        document.getElementById('tipo-veicoli').value = '';
+      } catch (err) {
+        document.getElementById('error-msg').textContent = 'Errore di rete. Verifica la connessione e l\'URL.';
+        toastErr.classList.add('show');
+      } finally {
+        submitBtn.disabled = false;
+        btnText.textContent = 'Registra appuntamento';
+        btnIcon.style.display = '';
+        spinner.style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+</html>
