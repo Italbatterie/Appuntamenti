@@ -1,171 +1,183 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Modulo di prenotazione</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@600;700&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --blue: #00475d;
-      --blue-dark: #003347;
+      --blue:       #00475d;
+      --blue-dark:  #003347;
+      --blue-mid:   #005a73;
       --blue-light: #e6f2f5;
-      --blue-text: #ffffff;
-      --black: #1A1A1A;
-      --gray-900: #2C2C2C;
-      --gray-700: #4A4A4A;
-      --gray-500: #7A7A7A;
-      --gray-300: #C8C8C8;
-      --gray-100: #F4F4F2;
-      --gray-50: #FAFAF8;
-      --white: #FFFFFF;
-      --success: #1D7A4A;
-      --success-bg: #E6F5EE;
-      --error: #9B2C2C;
-      --error-bg: #FDF0F0;
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
+      --blue-xlight:#f0f7fa;
+      --accent:     #00b4d8;
+      --white:      #ffffff;
+      --gray-900:   #1c2b30;
+      --gray-700:   #374f56;
+      --gray-500:   #6b8a92;
+      --gray-300:   #c4d5d9;
+      --gray-100:   #eef4f6;
+      --gray-50:    #f7fafb;
+      --success:    #1a7a4a;
+      --success-bg: #e6f5ee;
+      --success-bd: #a8d8bc;
+      --error:      #9b2c2c;
+      --error-bg:   #fdf0f0;
+      --error-bd:   #f5bbbb;
+      --radius-sm:  6px;
+      --radius-md:  10px;
+      --radius-lg:  16px;
+      --shadow:     0 4px 24px rgba(0,71,93,0.10), 0 1px 4px rgba(0,71,93,0.06);
     }
 
     html, body {
       min-height: 100vh;
-      background: #f0f4f6;
-      font-family: 'DM Sans', sans-serif;
+      background: var(--gray-100);
+      font-family: 'Inter', sans-serif;
       color: var(--gray-900);
     }
-
     body {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2rem 1rem 4rem;
+      padding: 2.5rem 1rem 5rem;
     }
 
-    /* Animated stripe bar at top */
     .topbar {
       position: fixed;
       top: 0; left: 0; right: 0;
-      height: 4px;
-      background: repeating-linear-gradient(
-        90deg,
-        var(--blue) 0px,
-        var(--blue) 24px,
-        #ffffff 24px,
-        #ffffff 32px
-      );
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue) 0%, var(--accent) 50%, var(--blue) 100%);
       background-size: 200% 100%;
-      animation: stripe 8s linear infinite;
+      animation: shimmer 3s linear infinite;
       z-index: 100;
     }
-    @keyframes stripe {
-      from { background-position: 0 0; }
-      to { background-position: 200% 0; }
+    @keyframes shimmer {
+      from { background-position: 200% 0; }
+      to   { background-position: -200% 0; }
     }
 
     .card {
       width: 100%;
-      max-width: 700px;
+      max-width: 720px;
       background: var(--white);
       border-radius: var(--radius-lg);
-      border: 1px solid var(--gray-300);
+      box-shadow: var(--shadow);
       overflow: hidden;
-      margin-top: 2rem;
+      margin-top: 2.5rem;
       animation: fadeUp 0.4s ease both;
     }
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Header */
+    /* HEADER */
     .card-header {
       background: var(--blue);
       padding: 1.75rem 2rem;
       display: flex;
       align-items: center;
       gap: 1.25rem;
+      position: relative;
+      overflow: hidden;
     }
-    .battery-icon {
-      width: 52px;
-      height: 52px;
-      background: #ffffff;
+    .card-header::after {
+      content: '';
+      position: absolute;
+      right: -40px; top: -40px;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+      pointer-events: none;
+    }
+    .header-logo {
+      width: 52px; height: 52px;
+      background: var(--white);
       border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
     }
-    .battery-icon svg {
-      width: 30px;
-      height: 30px;
-    }
+    .header-logo svg { width: 30px; height: 30px; }
     .header-text h1 {
-      font-size: 1.25rem;
-      font-weight: 600;
+      font-family: 'Inter Tight', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
       color: var(--white);
-      line-height: 1.3;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
     }
-    .header-text p {
-      font-size: 0.8rem;
-      color: var(--gray-300);
-      margin-top: 3px;
-      font-family: 'DM Mono', monospace;
-      letter-spacing: 0.04em;
-    }
-
-    /* Config strip */
-
-
-    /* Form body */
-    .card-body {
-      padding: 2rem;
-    }
-
-    .section-label {
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--gray-500);
-      margin-bottom: 1rem;
+    .header-meta {
       display: flex;
       align-items: center;
       gap: 8px;
+      margin-top: 6px;
+      flex-wrap: wrap;
     }
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--gray-300);
+    .header-badge {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.9);
+      padding: 3px 9px;
+      border-radius: 20px;
     }
 
+    /* SECTIONS */
+    .section-block {
+      padding: 1.75rem 2rem;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.25rem;
+    }
+    .section-num {
+      width: 28px; height: 28px;
+      background: var(--blue);
+      color: var(--white);
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-family: 'Inter Tight', sans-serif;
+    }
+    .section-title {
+      font-family: 'Inter Tight', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--blue);
+      letter-spacing: -0.01em;
+    }
+
+    /* FORM */
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      gap: 14px;
     }
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
     .form-group.full { grid-column: 1 / -1; }
 
     label {
-      font-size: 0.78rem;
-      font-weight: 500;
-      color: var(--gray-700);
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--gray-500);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
-    label .req {
-      color: var(--blue);
-      margin-left: 2px;
-    }
+    label .req { color: var(--blue); margin-left: 2px; }
 
     input[type="text"],
     input[type="tel"],
@@ -178,476 +190,442 @@
       width: 100%;
       padding: 9px 12px;
       font-size: 0.9rem;
-      font-family: 'DM Sans', sans-serif;
-      border: 1px solid var(--gray-300);
+      font-family: 'Inter', sans-serif;
+      border: 1.5px solid var(--gray-300);
       border-radius: var(--radius-sm);
       background: var(--gray-50);
       color: var(--gray-900);
       outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
       -webkit-appearance: none;
       appearance: none;
     }
     input:focus, select:focus, textarea:focus {
       border-color: var(--blue);
       background: var(--white);
-      box-shadow: 0 0 0 3px rgba(0,71,93,0.15);
+      box-shadow: 0 0 0 3px rgba(0,71,93,0.10);
     }
     input:hover:not(:focus), select:hover:not(:focus), textarea:hover:not(:focus) {
       border-color: var(--gray-500);
     }
-
     select {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A7A7A' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b8a92' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 12px center;
       padding-right: 36px;
       cursor: pointer;
     }
+    textarea { resize: vertical; min-height: 88px; line-height: 1.55; }
 
-    textarea {
-      resize: vertical;
-      min-height: 90px;
-      line-height: 1.5;
+    /* ACTION AREA */
+    .action-area {
+      padding: 1.5rem 2rem 2rem;
+      background: var(--gray-50);
+      border-top: 1px solid var(--gray-100);
+    }
+    .action-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      margin-bottom: 1rem;
+    }
+    .action-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
 
-    /* Submit button */
-    .btn-submit {
-      width: 100%;
-      padding: 13px 20px;
-      font-size: 1rem;
+    .btn-primary {
+      padding: 12px 16px;
+      font-size: 0.88rem;
       font-weight: 600;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Inter', sans-serif;
       background: var(--blue);
-      color: var(--blue-text);
+      color: var(--white);
       border: none;
       border-radius: var(--radius-md);
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px;
       transition: background 0.15s, transform 0.1s;
-      margin-top: 0.5rem;
-    }
-    .btn-submit:hover { background: var(--blue-dark); }
-    .btn-submit:active { transform: scale(0.99); }
-    .btn-submit:disabled {
-      background: var(--gray-300);
-      color: var(--gray-500);
-      cursor: not-allowed;
-    }
-
-    .btn-memo {
       width: 100%;
-      margin-top: 10px;
-      padding: 11px 20px;
-      font-size: 0.95rem;
-      font-weight: 500;
-      font-family: 'DM Sans', sans-serif;
-      background: transparent;
+    }
+    .btn-primary:hover  { background: var(--blue-dark); }
+    .btn-primary:active { transform: scale(0.99); }
+    .btn-primary:disabled { background: var(--gray-300); color: var(--gray-500); cursor: not-allowed; }
+
+    .btn-secondary {
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      background: var(--white);
       color: var(--blue);
       border: 1.5px solid var(--blue);
       border-radius: var(--radius-md);
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      transition: background 0.15s, color 0.15s, transform 0.1s;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px;
+      transition: background 0.15s, transform 0.1s;
+      width: 100%;
     }
-    .btn-memo:hover { background: var(--blue-light); }
-    .btn-memo:active { transform: scale(0.99); }
-    .btn-memo:disabled {
-      border-color: var(--gray-300);
-      color: var(--gray-500);
-      cursor: not-allowed;
-      background: transparent;
-    }
+    .btn-secondary:hover  { background: var(--blue-xlight); }
+    .btn-secondary:active { transform: scale(0.99); }
+    .btn-secondary:disabled { border-color: var(--gray-300); color: var(--gray-500); background: var(--white); cursor: not-allowed; }
 
     .spinner {
-      width: 18px;
-      height: 18px;
-      border: 2px solid #ffffff;
+      width: 15px; height: 15px;
+      border: 2px solid currentColor;
       border-top-color: transparent;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       display: none;
+      flex-shrink: 0;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Toast messages */
     .toast {
       display: none;
       align-items: center;
       gap: 10px;
-      padding: 12px 16px;
+      padding: 10px 14px;
       border-radius: var(--radius-md);
-      margin-top: 14px;
-      font-size: 0.875rem;
+      margin-top: 10px;
+      font-size: 0.84rem;
       font-weight: 500;
       border: 1px solid;
-      animation: fadeUp 0.25s ease both;
+      animation: fadeUp 0.2s ease both;
     }
-    .toast.show { display: flex; }
-    .toast.success {
-      background: var(--success-bg);
-      color: var(--success);
-      border-color: #A8D8BC;
-    }
-    .toast.error {
-      background: var(--error-bg);
-      color: var(--error);
-      border-color: #F5BBBB;
-    }
+    .toast.show    { display: flex; }
+    .toast.success { background: var(--success-bg); color: var(--success); border-color: var(--success-bd); }
+    .toast.error   { background: var(--error-bg);   color: var(--error);   border-color: var(--error-bd); }
 
-    /* Footer */
+    /* FOOTER */
     .card-footer {
-      background: var(--gray-50);
-      border-top: 1px solid var(--gray-100);
-      padding: 0.75rem 2rem;
-      font-size: 0.72rem;
-      color: var(--gray-500);
-      font-family: 'DM Mono', monospace;
+      background: var(--blue);
+      padding: 0.85rem 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 8px;
     }
-    .card-footer .dot {
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.74rem;
+      color: rgba(255,255,255,0.75);
+      font-weight: 500;
+    }
+    .footer-dot {
       width: 7px; height: 7px;
       border-radius: 50%;
-      background: var(--gray-300);
-      display: inline-block;
-      margin-right: 6px;
+      background: rgba(255,255,255,0.25);
+      flex-shrink: 0;
     }
-    .card-footer .dot.active { background: #00b4d8; }
+    .footer-dot.active { background: #4ddfb0; }
+    .footer-date { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
 
     @media (max-width: 560px) {
-      body { padding: 1rem 0.5rem 3rem; }
-      .card-header { padding: 1.25rem; }
-      .card-body { padding: 1.25rem; }
-      .config-strip { padding: 0.75rem 1.25rem; flex-wrap: wrap; }
-      .form-grid { grid-template-columns: 1fr; }
+      body { padding: 1rem 0.5rem 4rem; }
+      .card-header, .section-block, .action-area { padding-left: 1.25rem; padding-right: 1.25rem; }
+      .card-footer { padding: 0.75rem 1.25rem; flex-direction: column; align-items: flex-start; gap: 4px; }
+      .form-grid   { grid-template-columns: 1fr; }
       .form-group.full { grid-column: 1; }
-      .card-footer { flex-direction: column; gap: 4px; align-items: flex-start; }
+      .action-buttons  { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
   <div class="topbar"></div>
+  <input type="hidden" id="sheets-url" value="https://script.google.com/macros/s/AKfycbzozBZl49FkMiNe5kFpV1bI_hD8sKt1nF8zbL5MxIgdND-Z3TTP_YBZ8umuuJwn6DXxgg/exec"/>
 
   <div class="card">
 
-    <!-- Header -->
     <div class="card-header">
-      <div class="battery-icon">
+      <div class="header-logo">
         <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="3" y="9" width="22" height="15" rx="2.5" fill="#00475d"/>
           <rect x="7" y="7" width="5" height="3" rx="1" fill="#00475d"/>
-          <rect x="18" y="7" width="5" height="3" rx="1" fill="#1A1A1A"/>
-          <rect x="6" y="14" width="5" height="5" rx="1.5" fill="#00475d"/>
-          <rect x="13" y="14" width="5" height="5" rx="1.5" fill="#00475d"/>
-          <rect x="20" y="14" width="3" height="5" rx="1" fill="#00475d"/>
-          <rect x="1" y="12" width="2" height="5" rx="1" fill="#1A1A1A"/>
-          <rect x="27" y="12" width="2" height="5" rx="1" fill="#1A1A1A"/>
+          <rect x="18" y="7" width="5" height="3" rx="1" fill="#00475d"/>
+          <rect x="6" y="14" width="5" height="5" rx="1.5" fill="#00b4d8"/>
+          <rect x="13" y="14" width="5" height="5" rx="1.5" fill="#00b4d8"/>
+          <rect x="20" y="14" width="3" height="5" rx="1" fill="#00b4d8"/>
+          <rect x="1" y="12" width="2" height="5" rx="1" fill="#00475d"/>
+          <rect x="27" y="12" width="2" height="5" rx="1" fill="#00475d"/>
         </svg>
       </div>
       <div class="header-text">
         <h1>Modulo di prenotazione</h1>
+        <div class="header-meta">
+          <span class="header-badge">Servizio Scacciapensieri</span>
+          <span class="header-badge">Controllo batterie</span>
+        </div>
       </div>
     </div>
 
-    <input type="hidden" id="sheets-url" value="https://script.google.com/macros/s/AKfycbzozBZl49FkMiNe5kFpV1bI_hD8sKt1nF8zbL5MxIgdND-Z3TTP_YBZ8umuuJwn6DXxgg/exec" />
+    <form id="appointment-form" autocomplete="off">
+      <div class="card-body">
 
-    <!-- Form -->
-    <div class="card-body">
-
-      <form id="appointment-form" autocomplete="off">
-
-        <p class="section-label">Dati cliente</p>
-        <div class="form-grid">
-          <div class="form-group full">
-            <label for="azienda">Nome azienda <span class="req">*</span></label>
-            <input type="text" id="azienda" placeholder="es. Trasporti Rossi S.r.l." required />
+        <div class="section-block">
+          <div class="section-heading">
+            <div class="section-num">1</div>
+            <div class="section-title">Dati cliente</div>
           </div>
-          <div class="form-group full">
-            <label for="indirizzo">Indirizzo</label>
-            <input type="text" id="indirizzo" placeholder="Via Roma 12, 20100 Milano" />
-          </div>
-          <div class="form-group">
-            <label for="nome">Nome</label>
-            <input type="text" id="nome" placeholder="Mario" />
-          </div>
-          <div class="form-group">
-            <label for="cognome">Cognome</label>
-            <input type="text" id="cognome" placeholder="Rossi" />
-          </div>
-          <div class="form-group">
-            <label for="telefono">Telefono</label>
-            <input type="tel" id="telefono" placeholder="+39 333 123 4567" />
-          </div>
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" placeholder="mario.rossi@email.com" />
+          <div class="form-grid">
+            <div class="form-group full">
+              <label for="azienda">Nome azienda <span class="req">*</span></label>
+              <input type="text" id="azienda" placeholder="es. Trasporti Rossi S.r.l." required/>
+            </div>
+            <div class="form-group full">
+              <label for="indirizzo">Indirizzo</label>
+              <input type="text" id="indirizzo" placeholder="Via Roma 12, 20100 Milano"/>
+            </div>
+            <div class="form-group">
+              <label for="nome">Nome</label>
+              <input type="text" id="nome" placeholder="Mario"/>
+            </div>
+            <div class="form-group">
+              <label for="cognome">Cognome</label>
+              <input type="text" id="cognome" placeholder="Rossi"/>
+            </div>
+            <div class="form-group">
+              <label for="telefono">Telefono</label>
+              <input type="tel" id="telefono" placeholder="+39 333 123 4567"/>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" placeholder="mario.rossi@email.com"/>
+            </div>
           </div>
         </div>
 
-        <p class="section-label">Dettagli appuntamento</p>
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="data">Data <span class="req">*</span></label>
-            <input type="date" id="data" required />
+        <div class="section-block">
+          <div class="section-heading">
+            <div class="section-num">2</div>
+            <div class="section-title">Dettagli appuntamento</div>
           </div>
-          <div class="form-group">
-            <label for="ora">Ora <span class="req">*</span></label>
-            <input type="time" id="ora" required />
-          </div>
-          <div class="form-group full">
-            <label for="servizio">Tipo di servizio <span class="req">*</span></label>
-            <select id="servizio" required>
-              <option value="" disabled selected>Seleziona servizio...</option>
-              <option value="Controllo batteria singola">Controllo batteria singola</option>
-              <option value="Controllo parco mezzi completo">Controllo parco mezzi completo</option>
-              <option value="Primo controllo programmato">Primo controllo programmato</option>
-              <option value="Controllo periodico">Controllo periodico</option>
-              <option value="Sostituzione batteria">Sostituzione batteria</option>
-              <option value="Consulenza flotta">Consulenza flotta</option>
-              <option value="Altro">Altro</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="num-veicoli">N° veicoli da controllare</label>
-            <input type="number" id="num-veicoli" placeholder="es. 5" min="1" />
-          </div>
-          <div class="form-group">
-            <label for="tipo-veicoli">Tipo di veicoli</label>
-            <select id="tipo-veicoli">
-              <option value="" disabled selected>Seleziona...</option>
-              <option value="Auto">Auto</option>
-              <option value="Moto">Moto</option>
-              <option value="Veicoli commerciali">Veicoli commerciali</option>
-              <option value="Misto">Misto</option>
-              <option value="Altro">Altro</option>
-            </select>
-          </div>
-          <div class="form-group full">
-            <label for="note">Note / informazioni aggiuntive</label>
-            <textarea id="note" placeholder="Descrivere eventuali problemi noti, modelli di veicolo, esigenze particolari..."></textarea>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="data">Data <span class="req">*</span></label>
+              <input type="date" id="data" required/>
+            </div>
+            <div class="form-group">
+              <label for="ora">Ora <span class="req">*</span></label>
+              <input type="time" id="ora" required/>
+            </div>
+            <div class="form-group full">
+              <label for="servizio">Tipo di servizio <span class="req">*</span></label>
+              <select id="servizio" required>
+                <option value="" disabled selected>Seleziona servizio...</option>
+                <option value="Controllo batteria singola">Controllo batteria singola</option>
+                <option value="Controllo parco mezzi completo">Controllo parco mezzi completo</option>
+                <option value="Primo controllo programmato">Primo controllo programmato</option>
+                <option value="Controllo periodico">Controllo periodico</option>
+                <option value="Sostituzione batteria">Sostituzione batteria</option>
+                <option value="Consulenza flotta">Consulenza flotta</option>
+                <option value="Altro">Altro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="num-veicoli">N° veicoli da controllare</label>
+              <input type="number" id="num-veicoli" placeholder="es. 5" min="1"/>
+            </div>
+            <div class="form-group">
+              <label for="tipo-veicoli">Tipo di veicoli</label>
+              <select id="tipo-veicoli">
+                <option value="" disabled selected>Seleziona...</option>
+                <option value="Auto">Auto</option>
+                <option value="Moto">Moto</option>
+                <option value="Veicoli commerciali">Veicoli commerciali</option>
+                <option value="Misto">Misto</option>
+                <option value="Altro">Altro</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label for="note">Note / informazioni aggiuntive</label>
+              <textarea id="note" placeholder="Descrivere eventuali problemi noti, modelli di veicolo, esigenze particolari..."></textarea>
+            </div>
           </div>
         </div>
 
-        <button type="submit" class="btn-submit" id="submit-btn">
-          <svg id="btn-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M9 2v10M9 12l-3-3M9 12l3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M3 14h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          <span id="btn-text">Registra appuntamento</span>
-          <span class="spinner" id="btn-spinner"></span>
-        </button>
+      </div>
+
+      <div class="action-area">
+        <div class="action-label">Azioni disponibili</div>
+        <div class="action-buttons">
+
+          <button type="submit" class="btn-primary" id="submit-btn">
+            <svg id="submit-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2v9M8 11l-2.5-2.5M8 11l2.5-2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 14h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <span id="submit-text">Registra appuntamento</span>
+            <span class="spinner" id="submit-spinner"></span>
+          </button>
+
+          <button type="button" class="btn-secondary" id="memo-btn">
+            <svg id="memo-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M5 5.5h6M5 8h6M5 10.5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span id="memo-text">Invia memo appuntamento</span>
+            <span class="spinner" id="memo-spinner"></span>
+          </button>
+
+        </div>
 
         <div class="toast" id="toast-success">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M4 7l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Appuntamento registrato con successo in Google Sheets!
         </div>
         <div class="toast" id="toast-error">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M8 5v4M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span id="error-msg">Errore nell'invio. Controlla l'URL del Web App.</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7 4v4M7 10v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span id="error-msg">Errore nell'invio. Controlla la connessione.</span>
         </div>
-
-        <button type="button" class="btn-memo" id="memo-btn">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M3 3h12v12H3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-            <path d="M6 6h6M6 9h6M6 12h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M13 1v4M15 3h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span id="memo-btn-text">Invia memo dell'appuntamento</span>
-          <span class="spinner" id="memo-spinner"></span>
-        </button>
-
         <div class="toast" id="toast-memo-success">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M4 7l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Memo inviato con successo all'indirizzo email indicato!
         </div>
         <div class="toast" id="toast-memo-error">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M8 5v4M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span id="memo-error-msg">Errore nell'invio del memo. Verifica l'indirizzo email.</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7 4v4M7 10v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span id="memo-error-msg">Inserisci un indirizzo email valido prima di inviare il memo.</span>
         </div>
+      </div>
+    </form>
 
-      </form>
-    </div>
-
-    <!-- Footer -->
     <div class="card-footer">
-      <span><span class="dot" id="status-dot"></span><span id="status-text">In attesa configurazione URL</span></span>
-      <span id="footer-date"></span>
+      <div class="footer-brand">
+        <span class="footer-dot active"></span>
+        Collegato a Google Sheets
+      </div>
+      <span class="footer-date" id="footer-date"></span>
     </div>
 
   </div>
 
   <script>
-    // Set today as min date
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('data').setAttribute('min', today);
-
-    // Footer date
     document.getElementById('footer-date').textContent = new Date().toLocaleDateString('it-IT', {
       weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
     });
 
-    // Status dot — sempre attivo
-    const statusDot = document.getElementById('status-dot');
-    const statusText = document.getElementById('status-text');
-    statusDot.classList.add('active');
-    statusText.textContent = 'Collegato a Google Sheets';
-
     const SHEETS_URL = document.getElementById('sheets-url').value;
 
-    // Form submission
-    const form = document.getElementById('appointment-form');
-    const submitBtn = document.getElementById('submit-btn');
-    const btnText = document.getElementById('btn-text');
-    const btnIcon = document.getElementById('btn-icon');
-    const spinner = document.getElementById('btn-spinner');
-    const toastOk = document.getElementById('toast-success');
-    const toastErr = document.getElementById('toast-error');
+    const form           = document.getElementById('appointment-form');
+    const submitBtn      = document.getElementById('submit-btn');
+    const submitText     = document.getElementById('submit-text');
+    const submitIcon     = document.getElementById('submit-icon');
+    const submitSpinner  = document.getElementById('submit-spinner');
+    const toastOk        = document.getElementById('toast-success');
+    const toastErr       = document.getElementById('toast-error');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const url = SHEETS_URL;
-
-      toastOk.classList.remove('show');
-      toastErr.classList.remove('show');
-
-      // Loading state
+      [toastOk, toastErr].forEach(t => t.classList.remove('show'));
       submitBtn.disabled = true;
-      btnText.textContent = 'Invio in corso...';
-      btnIcon.style.display = 'none';
-      spinner.style.display = 'inline-block';
+      submitText.textContent = 'Invio in corso...';
+      submitIcon.style.display = 'none';
+      submitSpinner.style.display = 'inline-block';
 
       const payload = {
-        timestamp: new Date().toLocaleString('it-IT'),
-        azienda: document.getElementById('azienda').value.trim(),
-        indirizzo: document.getElementById('indirizzo').value.trim(),
-        nome: document.getElementById('nome').value.trim(),
-        cognome: document.getElementById('cognome').value.trim(),
-        telefono: document.getElementById('telefono').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        data: document.getElementById('data').value,
-        ora: document.getElementById('ora').value,
-        servizio: document.getElementById('servizio').value,
-        num_veicoli: document.getElementById('num-veicoli').value || '',
+        timestamp:    new Date().toLocaleString('it-IT'),
+        azienda:      document.getElementById('azienda').value.trim(),
+        indirizzo:    document.getElementById('indirizzo').value.trim(),
+        nome:         document.getElementById('nome').value.trim(),
+        cognome:      document.getElementById('cognome').value.trim(),
+        telefono:     document.getElementById('telefono').value.trim(),
+        email:        document.getElementById('email').value.trim(),
+        data:         document.getElementById('data').value,
+        ora:          document.getElementById('ora').value,
+        servizio:     document.getElementById('servizio').value,
+        num_veicoli:  document.getElementById('num-veicoli').value || '',
         tipo_veicoli: document.getElementById('tipo-veicoli').value || '',
-        note: document.getElementById('note').value.trim()
+        note:         document.getElementById('note').value.trim()
       };
 
       try {
-        await fetch(url, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        await fetch(SHEETS_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
         toastOk.classList.add('show');
         form.reset();
         document.getElementById('data').setAttribute('min', today);
         document.getElementById('servizio').value = '';
         document.getElementById('tipo-veicoli').value = '';
-      } catch (err) {
-        document.getElementById('error-msg').textContent = 'Errore di rete. Verifica la connessione e l\'URL.';
+      } catch(err) {
+        document.getElementById('error-msg').textContent = 'Errore di rete. Verifica la connessione.';
         toastErr.classList.add('show');
       } finally {
         submitBtn.disabled = false;
-        btnText.textContent = 'Registra appuntamento';
-        btnIcon.style.display = '';
-        spinner.style.display = 'none';
+        submitText.textContent = 'Registra appuntamento';
+        submitIcon.style.display = '';
+        submitSpinner.style.display = 'none';
       }
     });
 
-    // Memo button
-    const memoBtn = document.getElementById('memo-btn');
-    const memoBtnText = document.getElementById('memo-btn-text');
+    const memoBtn     = document.getElementById('memo-btn');
+    const memoText    = document.getElementById('memo-text');
+    const memoIcon    = document.getElementById('memo-icon');
     const memoSpinner = document.getElementById('memo-spinner');
-    const toastMemoOk = document.getElementById('toast-memo-success');
+    const toastMemoOk  = document.getElementById('toast-memo-success');
     const toastMemoErr = document.getElementById('toast-memo-error');
 
     memoBtn.addEventListener('click', async () => {
-      const email = document.getElementById('email').value.trim();
-      const azienda = document.getElementById('azienda').value.trim();
-
-      toastMemoOk.classList.remove('show');
-      toastMemoErr.classList.remove('show');
+      [toastMemoOk, toastMemoErr].forEach(t => t.classList.remove('show'));
+      const azienda  = document.getElementById('azienda').value.trim();
+      const email    = document.getElementById('email').value.trim();
 
       if (!azienda) {
-        document.getElementById('memo-error-msg').textContent = 'Compila almeno il campo Nome azienda prima di inviare il memo.';
-        toastMemoErr.classList.add('show');
-        return;
+        document.getElementById('memo-error-msg').textContent = 'Compila il campo Nome azienda prima di inviare il memo.';
+        toastMemoErr.classList.add('show'); return;
       }
       if (!email) {
         document.getElementById('memo-error-msg').textContent = 'Inserisci un indirizzo email nel campo Email dei dati cliente.';
-        toastMemoErr.classList.add('show');
-        return;
+        toastMemoErr.classList.add('show'); return;
       }
 
       const dataRaw = document.getElementById('data').value;
       const dataFormatted = dataRaw
-        ? new Date(dataRaw + 'T12:00:00').toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+        ? new Date(dataRaw + 'T12:00:00').toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric' })
         : '—';
-      const ora = document.getElementById('ora').value || '—';
-      const servizio = document.getElementById('servizio').value || '—';
-      const indirizzo = document.getElementById('indirizzo').value.trim() || '—';
-      const nome = document.getElementById('nome').value.trim();
-      const cognome = document.getElementById('cognome').value.trim();
-      const telefono = document.getElementById('telefono').value.trim() || '—';
-      const referente = (nome || cognome) ? `${nome} ${cognome}`.trim() : '—';
+      const nome      = document.getElementById('nome').value.trim();
+      const cognome   = document.getElementById('cognome').value.trim();
+      const referente = (nome || cognome) ? (nome + ' ' + cognome).trim() : '—';
 
       memoBtn.disabled = true;
-      memoBtnText.textContent = 'Invio in corso...';
+      memoText.textContent = 'Invio in corso...';
+      memoIcon.style.display = 'none';
       memoSpinner.style.display = 'inline-block';
 
       const payload = {
-        action: 'sendMemo',
-        to: email,
+        action:    'sendMemo',
+        to:        email,
         azienda,
-        indirizzo,
+        indirizzo: document.getElementById('indirizzo').value.trim() || '—',
         referente,
-        telefono,
+        telefono:  document.getElementById('telefono').value.trim() || '—',
         email,
-        data: dataFormatted,
-        ora,
-        servizio
+        data:      dataFormatted,
+        ora:       document.getElementById('ora').value || '—',
+        servizio:  document.getElementById('servizio').value || '—'
       };
 
       try {
-        await fetch(SHEETS_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        await fetch(SHEETS_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
         toastMemoOk.classList.add('show');
-      } catch (err) {
-        document.getElementById('memo-error-msg').textContent = 'Errore di rete durante l'invio del memo.';
+      } catch(err) {
+        document.getElementById('memo-error-msg').textContent = "Errore di rete durante l'invio del memo.";
         toastMemoErr.classList.add('show');
       } finally {
         memoBtn.disabled = false;
-        memoBtnText.textContent = 'Invia memo dell'appuntamento';
+        memoText.textContent = 'Invia memo appuntamento';
+        memoIcon.style.display = '';
         memoSpinner.style.display = 'none';
       }
     });
   </script>
-
 </body>
 </html>
