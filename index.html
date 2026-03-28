@@ -587,6 +587,7 @@
 
     function getSheetPayload() {
       return {
+        action:       'saveAppuntamento',
         timestamp:    new Date().toLocaleString('it-IT'),
         azienda:      document.getElementById('azienda').value.trim(),
         indirizzo:    document.getElementById('indirizzo').value.trim(),
