@@ -703,7 +703,6 @@
       submitIcon.style.display = 'none';
       submitSpinner.style.display = 'inline-block';
       postToSheets(getSheetPayload())
-        .then(function(r) { return r.text(); })
         .then(function() {
           toastOk.classList.add('show');
           resetForm();
@@ -743,7 +742,6 @@
       memoIcon.style.display = 'none';
       memoSpinner.style.display = 'inline-block';
       postToSheets(getMemoPayload())
-        .then(function(r) { return r.text(); })
         .then(function() {
           toastMemoOk.classList.add('show');
         })
@@ -796,13 +794,11 @@
       combinedIcon.style.display = 'none';
       combinedSpinner.style.display = 'inline-block';
       postToSheets(getSheetPayload())
-        .then(function(r) { return r.text(); })
         .then(function() {
           toastOk.classList.add('show');
           resetForm();
           return postToSheets(getMemoPayload());
         })
-        .then(function(r) { return r.text(); })
         .then(function() {
           toastMemoOk.classList.add('show');
         })
