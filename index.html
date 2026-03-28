@@ -762,11 +762,12 @@
       combinedText.textContent = 'Operazione in corso...';
       combinedIcon.style.display = 'none';
       combinedSpinner.style.display = 'inline-block';
+      var memoData = getMemoPayload();
       postToSheets(getSheetPayload())
         .then(function() {
           toastOk.classList.add('show');
           resetForm();
-          return postToSheets(getMemoPayload());
+          return postToSheets(memoData);
         })
         .then(function() {
           toastMemoOk.classList.add('show');
