@@ -608,19 +608,21 @@
       var cognome = document.getElementById('cognome').value.trim();
       var dataRaw = document.getElementById('data').value;
       var dataFormatted = dataRaw
-        ? new Date(dataRaw + 'T12:00:00').toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric' })
-        : '—';
+        ? new Date(dataRaw + 'T12:00:00').toLocaleDateString('it-IT', {
+            weekday:'long', day:'numeric', month:'long', year:'numeric'
+          })
+        : '';
       return {
         action:    'sendMemo',
         to:        document.getElementById('email').value.trim(),
         azienda:   document.getElementById('azienda').value.trim(),
-        indirizzo: document.getElementById('indirizzo').value.trim() || '—',
-        referente: (nome || cognome) ? (nome + ' ' + cognome).trim() : '—',
-        telefono:  document.getElementById('telefono').value.trim() || '—',
+        indirizzo: document.getElementById('indirizzo').value.trim() || '',
+        referente: (nome || cognome) ? (nome + ' ' + cognome).trim() : '',
+        telefono:  document.getElementById('telefono').value.trim() || '',
         email:     document.getElementById('email').value.trim(),
         data:      dataFormatted,
-        ora:       document.getElementById('ora').value || '—',
-        servizio:  document.getElementById('servizio').value || '—'
+        ora:       document.getElementById('ora').value || '',
+        servizio:  document.getElementById('servizio').value || ''
       };
     }
 
@@ -631,14 +633,13 @@
       document.getElementById('tipo-veicoli').value = '';
     }
 
-    // no-cors: il browser non può leggere la risposta ma la richiesta arriva allo script
+    // Invia tramite GET con parametro ?data=JSON
+    // Bypassa completamente CORS — Google Apps Script legge e.parameter.data
     function postToSheets(payload) {
-      return fetch(SHEETS_URL, {
-        method:  'POST',
-        mode:    'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(payload)
-      });
+      var json    = JSON.stringify(payload);
+      var encoded = encodeURIComponent(json);
+      var url     = SHEETS_URL + '?data=' + encoded;
+      return fetch(url, { method: 'GET', mode: 'no-cors' });
     }
 
     var toastOk      = document.getElementById('toast-success');
