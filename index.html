@@ -634,12 +634,46 @@
       document.getElementById('tipo-veicoli').value = '';
     }
 
-    // POST con Content-Type text/plain — nessun preflight CORS, identico allo script Cedolino
+    // Invia tramite form POST in iframe nascosto — bypassa CORS completamente
+    // Stessa tecnica usata dal Cedolino Italbatterie
     function postToSheets(payload) {
-      return fetch(SHEETS_URL, {
-        method:  'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body:    JSON.stringify(payload)
+      return new Promise(function(resolve, reject) {
+        try {
+          var iframe = document.createElement('iframe');
+          iframe.name = 'gs_iframe_' + Date.now();
+          iframe.style.display = 'none';
+          document.body.appendChild(iframe);
+
+          var form = document.createElement('form');
+          form.method = 'POST';
+          form.action = SHEETS_URL;
+          form.target = iframe.name;
+          form.style.display = 'none';
+
+          var input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = 'data';
+          input.value = JSON.stringify(payload);
+          form.appendChild(input);
+
+          document.body.appendChild(form);
+
+          iframe.addEventListener('load', function() {
+            setTimeout(function() {
+              document.body.removeChild(form);
+              document.body.removeChild(iframe);
+            }, 1000);
+            resolve();
+          });
+
+          setTimeout(function() {
+            resolve();
+          }, 5000);
+
+          form.submit();
+        } catch(err) {
+          reject(err);
+        }
       });
     }
 
