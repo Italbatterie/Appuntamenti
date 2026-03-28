@@ -585,23 +585,8 @@
 
     const SHEETS_URL = document.getElementById('sheets-url').value;
 
-    // ── REGISTRA ──
-    const form          = document.getElementById('appointment-form');
-    const submitBtn     = document.getElementById('submit-btn');
-    const submitText    = document.getElementById('submit-text');
-    const submitIcon    = document.getElementById('submit-icon');
-    const submitSpinner = document.getElementById('submit-spinner');
-    const toastOk       = document.getElementById('toast-success');
-    const toastErr      = document.getElementById('toast-error');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      [toastOk, toastErr].forEach(t => t.classList.remove('show'));
-      submitBtn.disabled = true;
-      submitText.textContent = 'Invio in corso...';
-      submitIcon.style.display = 'none';
-      submitSpinner.style.display = 'inline-block';
-      const payload = {
+    function getSheetPayload() {
+      return {
         timestamp:    new Date().toLocaleString('it-IT'),
         azienda:      document.getElementById('azienda').value.trim(),
         indirizzo:    document.getElementById('indirizzo').value.trim(),
@@ -616,36 +601,93 @@
         tipo_veicoli: document.getElementById('tipo-veicoli').value || '',
         note:         document.getElementById('note').value.trim()
       };
-      try {
-        await fetch(SHEETS_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+    }
+
+    function getMemoPayload() {
+      var nome    = document.getElementById('nome').value.trim();
+      var cognome = document.getElementById('cognome').value.trim();
+      var dataRaw = document.getElementById('data').value;
+      var dataFormatted = dataRaw
+        ? new Date(dataRaw + 'T12:00:00').toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric' })
+        : '—';
+      return {
+        action:    'sendMemo',
+        to:        document.getElementById('email').value.trim(),
+        azienda:   document.getElementById('azienda').value.trim(),
+        indirizzo: document.getElementById('indirizzo').value.trim() || '—',
+        referente: (nome || cognome) ? (nome + ' ' + cognome).trim() : '—',
+        telefono:  document.getElementById('telefono').value.trim() || '—',
+        email:     document.getElementById('email').value.trim(),
+        data:      dataFormatted,
+        ora:       document.getElementById('ora').value || '—',
+        servizio:  document.getElementById('servizio').value || '—'
+      };
+    }
+
+    function resetForm() {
+      document.getElementById('appointment-form').reset();
+      document.getElementById('data').setAttribute('min', today);
+      document.getElementById('servizio').value = '';
+      document.getElementById('tipo-veicoli').value = '';
+    }
+
+    function postToSheets(payload) {
+      return fetch(SHEETS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    }
+
+    var toastOk     = document.getElementById('toast-success');
+    var toastErr    = document.getElementById('toast-error');
+    var toastMemoOk  = document.getElementById('toast-memo-success');
+    var toastMemoErr = document.getElementById('toast-memo-error');
+
+    function clearToasts() {
+      toastOk.classList.remove('show');
+      toastErr.classList.remove('show');
+      toastMemoOk.classList.remove('show');
+      toastMemoErr.classList.remove('show');
+    }
+
+    // 1. REGISTRA
+    var submitBtn     = document.getElementById('submit-btn');
+    var submitText    = document.getElementById('submit-text');
+    var submitIcon    = document.getElementById('submit-icon');
+    var submitSpinner = document.getElementById('submit-spinner');
+
+    document.getElementById('appointment-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      clearToasts();
+      submitBtn.disabled = true;
+      submitText.textContent = 'Invio in corso...';
+      submitIcon.style.display = 'none';
+      submitSpinner.style.display = 'inline-block';
+      postToSheets(getSheetPayload()).then(function() {
         toastOk.classList.add('show');
-        form.reset();
-        document.getElementById('data').setAttribute('min', today);
-        document.getElementById('servizio').value = '';
-        document.getElementById('tipo-veicoli').value = '';
-      } catch(err) {
+        resetForm();
+      }).catch(function() {
         document.getElementById('error-msg').textContent = 'Errore di rete. Verifica la connessione.';
         toastErr.classList.add('show');
-      } finally {
+      }).finally(function() {
         submitBtn.disabled = false;
         submitText.textContent = 'Registra appuntamento';
         submitIcon.style.display = '';
         submitSpinner.style.display = 'none';
-      }
+      });
     });
 
-    // ── MEMO ──
-    const memoBtn     = document.getElementById('memo-btn');
-    const memoText    = document.getElementById('memo-text');
-    const memoIcon    = document.getElementById('memo-icon');
-    const memoSpinner = document.getElementById('memo-spinner');
-    const toastMemoOk  = document.getElementById('toast-memo-success');
-    const toastMemoErr = document.getElementById('toast-memo-error');
+    // 2. INVIA MEMO
+    var memoBtn     = document.getElementById('memo-btn');
+    var memoText    = document.getElementById('memo-text');
+    var memoIcon    = document.getElementById('memo-icon');
+    var memoSpinner = document.getElementById('memo-spinner');
 
-    memoBtn.addEventListener('click', async () => {
-      [toastMemoOk, toastMemoErr].forEach(t => t.classList.remove('show'));
-      const azienda = document.getElementById('azienda').value.trim();
-      const email   = document.getElementById('email').value.trim();
+    memoBtn.addEventListener('click', function() {
+      clearToasts();
+      var azienda = document.getElementById('azienda').value.trim();
+      var email   = document.getElementById('email').value.trim();
       if (!azienda) {
         document.getElementById('memo-error-msg').textContent = 'Compila il campo Nome azienda prima di inviare il memo.';
         toastMemoErr.classList.add('show'); return;
@@ -654,65 +696,43 @@
         document.getElementById('memo-error-msg').textContent = 'Inserisci un indirizzo email nel campo Email dei dati cliente.';
         toastMemoErr.classList.add('show'); return;
       }
-      const dataRaw = document.getElementById('data').value;
-      const dataFormatted = dataRaw
-        ? new Date(dataRaw + 'T12:00:00').toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric' })
-        : '—';
-      const nome    = document.getElementById('nome').value.trim();
-      const cognome = document.getElementById('cognome').value.trim();
       memoBtn.disabled = true;
       memoText.textContent = 'Invio in corso...';
       memoIcon.style.display = 'none';
       memoSpinner.style.display = 'inline-block';
-      try {
-        await fetch(SHEETS_URL, {
-          method:'POST', mode:'no-cors',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({
-            action: 'sendMemo', to: email, azienda,
-            indirizzo: document.getElementById('indirizzo').value.trim() || '—',
-            referente: (nome || cognome) ? (nome + ' ' + cognome).trim() : '—',
-            telefono: document.getElementById('telefono').value.trim() || '—',
-            email, data: dataFormatted,
-            ora: document.getElementById('ora').value || '—',
-            servizio: document.getElementById('servizio').value || '—'
-          })
-        });
+      postToSheets(getMemoPayload()).then(function() {
         toastMemoOk.classList.add('show');
-      } catch(err) {
-        document.getElementById('memo-error-msg').textContent = "Errore di rete durante l'invio del memo.";
+      }).catch(function() {
+        document.getElementById('memo-error-msg').textContent = 'Errore di rete durante invio memo.';
         toastMemoErr.classList.add('show');
-      } finally {
+      }).finally(function() {
         memoBtn.disabled = false;
         memoText.textContent = 'Invia memo appuntamento';
         memoIcon.style.display = '';
         memoSpinner.style.display = 'none';
-      }
+      });
     });
 
-    // ── REGISTRA + MEMO ──
-    const combinedBtn     = document.getElementById('combined-btn');
-    const combinedText    = document.getElementById('combined-text');
-    const combinedIcon    = document.getElementById('combined-icon');
-    const combinedSpinner = document.getElementById('combined-spinner');
+    // 3. REGISTRA + MEMO
+    var combinedBtn     = document.getElementById('combined-btn');
+    var combinedText    = document.getElementById('combined-text');
+    var combinedIcon    = document.getElementById('combined-icon');
+    var combinedSpinner = document.getElementById('combined-spinner');
 
-    combinedBtn.addEventListener('click', async () => {
-      [toastOk, toastErr, toastMemoOk, toastMemoErr].forEach(t => t.classList.remove('show'));
-
-      const azienda = document.getElementById('azienda').value.trim();
-      const email   = document.getElementById('email').value.trim();
-
-      // Validate required fields
+    combinedBtn.addEventListener('click', function() {
+      clearToasts();
+      var azienda = document.getElementById('azienda').value.trim();
+      var email   = document.getElementById('email').value.trim();
       if (!azienda) {
         document.getElementById('error-msg').textContent = 'Compila il campo Nome azienda prima di procedere.';
         toastErr.classList.add('show'); return;
       }
       if (!document.getElementById('data').value) {
-        document.getElementById('error-msg').textContent = 'Seleziona la data dell'appuntamento.';
+        document.getElementById('error-msg').textContent = 'Seleziona la data appuntamento.';
         toastErr.classList.add('show'); return;
       }
       if (!document.getElementById('ora').value) {
-        document.getElementById('error-msg').textContent = 'Inserisci l'ora dell'appuntamento.';
+        document.getElementById('error-msg').textContent = "Inserisci l'ora dell'appuntamento.";
         toastErr.classList.add('show'); return;
       }
       if (!document.getElementById('servizio').value) {
@@ -723,81 +743,29 @@
         document.getElementById('memo-error-msg').textContent = 'Inserisci un indirizzo email per inviare il memo.';
         toastMemoErr.classList.add('show'); return;
       }
-
       combinedBtn.disabled = true;
       submitBtn.disabled   = true;
       memoBtn.disabled     = true;
       combinedText.textContent = 'Operazione in corso...';
       combinedIcon.style.display = 'none';
       combinedSpinner.style.display = 'inline-block';
-
-      const nome    = document.getElementById('nome').value.trim();
-      const cognome = document.getElementById('cognome').value.trim();
-      const dataRaw = document.getElementById('data').value;
-      const dataFormatted = dataRaw
-        ? new Date(dataRaw + 'T12:00:00').toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric' })
-        : '—';
-
-      const sheetPayload = {
-        timestamp:    new Date().toLocaleString('it-IT'),
-        azienda,
-        indirizzo:    document.getElementById('indirizzo').value.trim(),
-        nome, cognome,
-        telefono:     document.getElementById('telefono').value.trim(),
-        email,
-        data:         dataRaw,
-        ora:          document.getElementById('ora').value,
-        servizio:     document.getElementById('servizio').value,
-        num_veicoli:  document.getElementById('num-veicoli').value || '',
-        tipo_veicoli: document.getElementById('tipo-veicoli').value || '',
-        note:         document.getElementById('note').value.trim()
-      };
-
-      const memoPayload = {
-        action: 'sendMemo', to: email, azienda,
-        indirizzo: document.getElementById('indirizzo').value.trim() || '—',
-        referente: (nome || cognome) ? (nome + ' ' + cognome).trim() : '—',
-        telefono: document.getElementById('telefono').value.trim() || '—',
-        email, data: dataFormatted,
-        ora: document.getElementById('ora').value || '—',
-        servizio: document.getElementById('servizio').value || '—'
-      };
-
-      let sheetOk = false, memoOk = false;
-
-      try {
-        await fetch(SHEETS_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(sheetPayload) });
-        sheetOk = true;
-      } catch(e) {}
-
-      try {
-        await fetch(SHEETS_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(memoPayload) });
-        memoOk = true;
-      } catch(e) {}
-
-      if (sheetOk) {
+      postToSheets(getSheetPayload()).then(function() {
         toastOk.classList.add('show');
-        form.reset();
-        document.getElementById('data').setAttribute('min', today);
-        document.getElementById('servizio').value = '';
-        document.getElementById('tipo-veicoli').value = '';
-      } else {
-        document.getElementById('error-msg').textContent = 'Errore nella registrazione su Sheets.';
-        toastErr.classList.add('show');
-      }
-      if (memoOk) {
+        resetForm();
+        return postToSheets(getMemoPayload());
+      }).then(function() {
         toastMemoOk.classList.add('show');
-      } else {
-        document.getElementById('memo-error-msg').textContent = 'Errore nell'invio del memo email.';
+      }).catch(function() {
+        document.getElementById('memo-error-msg').textContent = 'Errore durante una delle operazioni.';
         toastMemoErr.classList.add('show');
-      }
-
-      combinedBtn.disabled  = false;
-      submitBtn.disabled    = false;
-      memoBtn.disabled      = false;
-      combinedText.textContent = 'Registra appuntamento e invia memo';
-      combinedIcon.style.display = '';
-      combinedSpinner.style.display = 'none';
+      }).finally(function() {
+        combinedBtn.disabled = false;
+        submitBtn.disabled   = false;
+        memoBtn.disabled     = false;
+        combinedText.textContent = 'Registra appuntamento e invia memo';
+        combinedIcon.style.display = '';
+        combinedSpinner.style.display = 'none';
+      });
     });
   </script>
 </body>
