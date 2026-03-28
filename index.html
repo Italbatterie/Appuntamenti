@@ -633,13 +633,13 @@
       document.getElementById('tipo-veicoli').value = '';
     }
 
-    // Invia tramite GET con parametro ?data=JSON
-    // Bypassa completamente CORS — Google Apps Script legge e.parameter.data
+    // POST con Content-Type text/plain — nessun preflight CORS, identico allo script Cedolino
     function postToSheets(payload) {
-      var json    = JSON.stringify(payload);
-      var encoded = encodeURIComponent(json);
-      var url     = SHEETS_URL + '?data=' + encoded;
-      return fetch(url, { method: 'GET', mode: 'no-cors' });
+      return fetch(SHEETS_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body:    JSON.stringify(payload)
+      });
     }
 
     var toastOk      = document.getElementById('toast-success');
@@ -668,12 +668,13 @@
       submitIcon.style.display = 'none';
       submitSpinner.style.display = 'inline-block';
       postToSheets(getSheetPayload())
+        .then(function(r) { return r.text(); })
         .then(function() {
           toastOk.classList.add('show');
           resetForm();
         })
-        .catch(function() {
-          document.getElementById('error-msg').textContent = 'Errore di rete. Verifica la connessione.';
+        .catch(function(err) {
+          document.getElementById('error-msg').textContent = 'Errore: ' + err.message;
           toastErr.classList.add('show');
         })
         .finally(function() {
@@ -707,11 +708,12 @@
       memoIcon.style.display = 'none';
       memoSpinner.style.display = 'inline-block';
       postToSheets(getMemoPayload())
+        .then(function(r) { return r.text(); })
         .then(function() {
           toastMemoOk.classList.add('show');
         })
-        .catch(function() {
-          document.getElementById('memo-error-msg').textContent = 'Errore di rete durante invio memo.';
+        .catch(function(err) {
+          document.getElementById('memo-error-msg').textContent = 'Errore: ' + err.message;
           toastMemoErr.classList.add('show');
         })
         .finally(function() {
@@ -759,16 +761,18 @@
       combinedIcon.style.display = 'none';
       combinedSpinner.style.display = 'inline-block';
       postToSheets(getSheetPayload())
+        .then(function(r) { return r.text(); })
         .then(function() {
           toastOk.classList.add('show');
           resetForm();
           return postToSheets(getMemoPayload());
         })
+        .then(function(r) { return r.text(); })
         .then(function() {
           toastMemoOk.classList.add('show');
         })
-        .catch(function() {
-          document.getElementById('memo-error-msg').textContent = 'Errore durante una delle operazioni.';
+        .catch(function(err) {
+          document.getElementById('memo-error-msg').textContent = 'Errore: ' + err.message;
           toastMemoErr.classList.add('show');
         })
         .finally(function() {
