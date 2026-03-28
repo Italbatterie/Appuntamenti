@@ -280,11 +280,11 @@
       margin-bottom: 0.9rem;
     }
     .action-buttons {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
-      flex-wrap: wrap;
     }
-    .action-buttons > * { flex: 1; min-width: 220px; }
+    .action-buttons > * { min-width: 0; }
 
     .btn-primary {
       padding: 12px 24px;
@@ -313,6 +313,22 @@
     .btn-secondary:hover  { background: var(--blue-xlight); }
     .btn-secondary:active { transform: scale(0.99); }
     .btn-secondary:disabled { border-color: var(--gray-300); color: var(--gray-500); background: var(--white); cursor: not-allowed; }
+
+    .btn-combined {
+      padding: 12px 24px;
+      font-size: 0.9rem; font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      background: var(--blue-dark); color: var(--white);
+      border: none; border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background 0.15s, transform 0.1s;
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+    .btn-combined:hover  { background: #002535; }
+    .btn-combined:active { transform: scale(0.99); }
+    .btn-combined:disabled { background: var(--gray-300); color: var(--gray-500); cursor: not-allowed; }
 
     .spinner {
       width: 15px; height: 15px;
@@ -516,6 +532,17 @@
               <span class="spinner" id="memo-spinner"></span>
             </button>
 
+            <button type="button" class="btn-combined" id="combined-btn">
+              <svg id="combined-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2v9M8 11l-2.5-2.5M8 11l2.5-2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 14h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <circle cx="12" cy="4" r="3" fill="currentColor" opacity="0.25"/>
+                <path d="M11 4h2M12 3v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              </svg>
+              <span id="combined-text">Registra appuntamento e invia memo</span>
+              <span class="spinner" id="combined-spinner"></span>
+            </button>
+
           </div>
 
           <div class="toast" id="toast-success">
@@ -661,6 +688,116 @@
         memoIcon.style.display = '';
         memoSpinner.style.display = 'none';
       }
+    });
+
+    // ── REGISTRA + MEMO ──
+    const combinedBtn     = document.getElementById('combined-btn');
+    const combinedText    = document.getElementById('combined-text');
+    const combinedIcon    = document.getElementById('combined-icon');
+    const combinedSpinner = document.getElementById('combined-spinner');
+
+    combinedBtn.addEventListener('click', async () => {
+      [toastOk, toastErr, toastMemoOk, toastMemoErr].forEach(t => t.classList.remove('show'));
+
+      const azienda = document.getElementById('azienda').value.trim();
+      const email   = document.getElementById('email').value.trim();
+
+      // Validate required fields
+      if (!azienda) {
+        document.getElementById('error-msg').textContent = 'Compila il campo Nome azienda prima di procedere.';
+        toastErr.classList.add('show'); return;
+      }
+      if (!document.getElementById('data').value) {
+        document.getElementById('error-msg').textContent = 'Seleziona la data dell'appuntamento.';
+        toastErr.classList.add('show'); return;
+      }
+      if (!document.getElementById('ora').value) {
+        document.getElementById('error-msg').textContent = 'Inserisci l'ora dell'appuntamento.';
+        toastErr.classList.add('show'); return;
+      }
+      if (!document.getElementById('servizio').value) {
+        document.getElementById('error-msg').textContent = 'Seleziona il tipo di servizio.';
+        toastErr.classList.add('show'); return;
+      }
+      if (!email) {
+        document.getElementById('memo-error-msg').textContent = 'Inserisci un indirizzo email per inviare il memo.';
+        toastMemoErr.classList.add('show'); return;
+      }
+
+      combinedBtn.disabled = true;
+      submitBtn.disabled   = true;
+      memoBtn.disabled     = true;
+      combinedText.textContent = 'Operazione in corso...';
+      combinedIcon.style.display = 'none';
+      combinedSpinner.style.display = 'inline-block';
+
+      const nome    = document.getElementById('nome').value.trim();
+      const cognome = document.getElementById('cognome').value.trim();
+      const dataRaw = document.getElementById('data').value;
+      const dataFormatted = dataRaw
+        ? new Date(dataRaw + 'T12:00:00').toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric' })
+        : '—';
+
+      const sheetPayload = {
+        timestamp:    new Date().toLocaleString('it-IT'),
+        azienda,
+        indirizzo:    document.getElementById('indirizzo').value.trim(),
+        nome, cognome,
+        telefono:     document.getElementById('telefono').value.trim(),
+        email,
+        data:         dataRaw,
+        ora:          document.getElementById('ora').value,
+        servizio:     document.getElementById('servizio').value,
+        num_veicoli:  document.getElementById('num-veicoli').value || '',
+        tipo_veicoli: document.getElementById('tipo-veicoli').value || '',
+        note:         document.getElementById('note').value.trim()
+      };
+
+      const memoPayload = {
+        action: 'sendMemo', to: email, azienda,
+        indirizzo: document.getElementById('indirizzo').value.trim() || '—',
+        referente: (nome || cognome) ? (nome + ' ' + cognome).trim() : '—',
+        telefono: document.getElementById('telefono').value.trim() || '—',
+        email, data: dataFormatted,
+        ora: document.getElementById('ora').value || '—',
+        servizio: document.getElementById('servizio').value || '—'
+      };
+
+      let sheetOk = false, memoOk = false;
+
+      try {
+        await fetch(SHEETS_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(sheetPayload) });
+        sheetOk = true;
+      } catch(e) {}
+
+      try {
+        await fetch(SHEETS_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(memoPayload) });
+        memoOk = true;
+      } catch(e) {}
+
+      if (sheetOk) {
+        toastOk.classList.add('show');
+        form.reset();
+        document.getElementById('data').setAttribute('min', today);
+        document.getElementById('servizio').value = '';
+        document.getElementById('tipo-veicoli').value = '';
+      } else {
+        document.getElementById('error-msg').textContent = 'Errore nella registrazione su Sheets.';
+        toastErr.classList.add('show');
+      }
+      if (memoOk) {
+        toastMemoOk.classList.add('show');
+      } else {
+        document.getElementById('memo-error-msg').textContent = 'Errore nell'invio del memo email.';
+        toastMemoErr.classList.add('show');
+      }
+
+      combinedBtn.disabled  = false;
+      submitBtn.disabled    = false;
+      memoBtn.disabled      = false;
+      combinedText.textContent = 'Registra appuntamento e invia memo';
+      combinedIcon.style.display = '';
+      combinedSpinner.style.display = 'none';
     });
   </script>
 </body>
