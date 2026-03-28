@@ -613,7 +613,7 @@
             weekday:'long', day:'numeric', month:'long', year:'numeric'
           })
         : '';
-      return {
+      var payload = {
         action:    'sendMemo',
         to:        document.getElementById('email').value.trim(),
         azienda:   document.getElementById('azienda').value.trim(),
@@ -625,6 +625,8 @@
         ora:       document.getElementById('ora').value || '',
         servizio:  document.getElementById('servizio').value || ''
       };
+      console.log('MEMO PAYLOAD:', JSON.stringify(payload));
+      return payload;
     }
 
     function resetForm() {
@@ -634,46 +636,13 @@
       document.getElementById('tipo-veicoli').value = '';
     }
 
-    // Invia tramite form POST in iframe nascosto — bypassa CORS completamente
-    // Stessa tecnica usata dal Cedolino Italbatterie
+    // POST con no-cors — la risposta è opaca ma la richiesta arriva allo script
     function postToSheets(payload) {
-      return new Promise(function(resolve, reject) {
-        try {
-          var iframe = document.createElement('iframe');
-          iframe.name = 'gs_iframe_' + Date.now();
-          iframe.style.display = 'none';
-          document.body.appendChild(iframe);
-
-          var form = document.createElement('form');
-          form.method = 'POST';
-          form.action = SHEETS_URL;
-          form.target = iframe.name;
-          form.style.display = 'none';
-
-          var input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = 'data';
-          input.value = JSON.stringify(payload);
-          form.appendChild(input);
-
-          document.body.appendChild(form);
-
-          iframe.addEventListener('load', function() {
-            setTimeout(function() {
-              document.body.removeChild(form);
-              document.body.removeChild(iframe);
-            }, 1000);
-            resolve();
-          });
-
-          setTimeout(function() {
-            resolve();
-          }, 5000);
-
-          form.submit();
-        } catch(err) {
-          reject(err);
-        }
+      return fetch(SHEETS_URL, {
+        method:  'POST',
+        mode:    'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body:    JSON.stringify(payload)
       });
     }
 
