@@ -631,19 +631,13 @@
       document.getElementById('tipo-veicoli').value = '';
     }
 
-    // Fetch con lettura risposta JSON (come lo script Cedolino che funziona)
+    // no-cors: il browser non può leggere la risposta ma la richiesta arriva allo script
     function postToSheets(payload) {
       return fetch(SHEETS_URL, {
         method:  'POST',
+        mode:    'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(payload)
-      })
-      .then(function(r) { return r.json(); })
-      .then(function(json) {
-        if (json && json.success === false) {
-          throw new Error(json.message || 'Errore server');
-        }
-        return json;
       });
     }
 
@@ -677,8 +671,8 @@
           toastOk.classList.add('show');
           resetForm();
         })
-        .catch(function(err) {
-          document.getElementById('error-msg').textContent = 'Errore: ' + err.message;
+        .catch(function() {
+          document.getElementById('error-msg').textContent = 'Errore di rete. Verifica la connessione.';
           toastErr.classList.add('show');
         })
         .finally(function() {
@@ -715,8 +709,8 @@
         .then(function() {
           toastMemoOk.classList.add('show');
         })
-        .catch(function(err) {
-          document.getElementById('memo-error-msg').textContent = 'Errore invio memo: ' + err.message;
+        .catch(function() {
+          document.getElementById('memo-error-msg').textContent = 'Errore di rete durante invio memo.';
           toastMemoErr.classList.add('show');
         })
         .finally(function() {
@@ -772,8 +766,8 @@
         .then(function() {
           toastMemoOk.classList.add('show');
         })
-        .catch(function(err) {
-          document.getElementById('memo-error-msg').textContent = 'Errore: ' + err.message;
+        .catch(function() {
+          document.getElementById('memo-error-msg').textContent = 'Errore durante una delle operazioni.';
           toastMemoErr.classList.add('show');
         })
         .finally(function() {
