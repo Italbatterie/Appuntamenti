@@ -137,6 +137,29 @@
     .header-right {
       display: flex; align-items: center; gap: 8px; z-index: 1;
     }
+    .header-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 16px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      color: rgba(255,255,255,0.92);
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: background 0.15s, border-color 0.15s;
+      white-space: nowrap;
+      z-index: 1;
+    }
+    .header-nav-btn:hover {
+      background: rgba(255,255,255,0.22);
+      border-color: rgba(255,255,255,0.5);
+    }
+
     .header-badge {
       font-size: 0.68rem;
       font-weight: 600;
@@ -412,7 +435,12 @@
       </div>
     </div>
     <div class="header-right">
-      <span class="header-badge">Italbatterie</span>
+      <a href="https://italbatterie.github.io/Search/" class="header-nav-btn">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0">
+          <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Cerca appuntamenti
+      </a>
     </div>
   </header>
 
