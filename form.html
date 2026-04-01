@@ -1154,27 +1154,31 @@
     async function checkAdminPass() {
       var password = document.getElementById('admin-pass-input').value;
       var hash = await sha256(password);
-      var users = JSON.parse(localStorage.getItem('ib_users') || '[]');
-      var match = null;
-      if (users.length === 0) {
-        var defHash = await sha256('Italbatterie2025!');
-        if (hash === defHash) match = { role: 'admin' };
-      } else {
-        match = users.find(function(u) {
-          return u.hash === hash && u.role === 'admin' && u.active !== false;
-        }) || null;
-      }
-      if (match) {
-        closeAdminModal();
-        // Generate a short-lived token (60 seconds) to pass auth to new tab
-        var token = await sha256('ib_admin_' + Date.now().toString().slice(0,-3));
-        localStorage.setItem('ib_admin_token', JSON.stringify({
-          t: token, h: hash, exp: Date.now() + 60000
-        }));
-        window.open('admin.html?t=' + token.slice(0,16), '_blank');
-      } else {
+
+      try {
+        var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzozBZl49FkMiNe5kFpV1bI_hD8sKt1nF8zbL5MxIgdND-Z3TTP_YBZ8umuuJwn6DXxgg/exec';
+        var url = SHEETS_URL
+          + '?action=login'
+          + '&username=' + encodeURIComponent('__admincheck__')
+          + '&hash='     + encodeURIComponent(hash);
+        // Verifica che l'hash corrisponda a un admin sullo script
+        var resp = await fetch(SHEETS_URL
+          + '?action=getUsers&adminHash=' + encodeURIComponent(hash));
+        var json = await resp.json();
+
+        if (json && json.success) {
+          closeAdminModal();
+          var token = await sha256('ib_admin_' + Date.now().toString().slice(0,-3));
+          localStorage.setItem('ib_admin_token', JSON.stringify({
+            t: token, h: hash, exp: Date.now() + 60000
+          }));
+          window.open('admin.html?t=' + token.slice(0,16), '_blank');
+        } else {
+          document.getElementById('admin-modal-err').style.display = 'block';
+          document.getElementById('admin-pass-input').focus();
+        }
+      } catch(err) {
         document.getElementById('admin-modal-err').style.display = 'block';
-        document.getElementById('admin-pass-input').focus();
       }
     }
     document.getElementById('admin-btn').addEventListener('click', openAdminModal);
