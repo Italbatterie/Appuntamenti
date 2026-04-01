@@ -308,6 +308,9 @@
   </div>
 
   <script>
+    var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzozBZl49FkMiNe5kFpV1bI_hD8sKt1nF8zbL5MxIgdND-Z3TTP_YBZ8umuuJwn6DXxgg/exec';
+    var adminHash = null; // set after auth
+
     // SHA-256 via SubtleCrypto
     async function sha256(str) {
       var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
@@ -315,7 +318,6 @@
         .map(function(b) { return b.toString(16).padStart(2,'0'); }).join('');
     }
 
-    // Toggle password visibility
     function togglePw(id, btn) {
       var inp = document.getElementById(id);
       inp.type = inp.type === 'password' ? 'text' : 'password';
@@ -324,23 +326,22 @@
     // Auth guard — token passed via URL from form.html
     (function() {
       try {
-        // Check URL token
         var urlToken = new URLSearchParams(window.location.search).get('t');
         if (urlToken) {
           var stored = JSON.parse(localStorage.getItem('ib_admin_token') || 'null');
           if (stored && Date.now() < stored.exp && stored.t.slice(0,16) === urlToken) {
-            localStorage.removeItem('ib_admin_token'); // one-time use
-            // Store admin session for this tab
+            localStorage.removeItem('ib_admin_token');
+            adminHash = stored.h || null;
             sessionStorage.setItem('ib_admin_ok', '1');
-            // Clean URL
+            sessionStorage.setItem('ib_admin_hash', adminHash || '');
             history.replaceState(null, '', 'admin.html');
             document.getElementById('admin-content').style.display = 'block';
             renderUsers();
             return;
           }
         }
-        // Check tab session (already authenticated in this tab)
         if (sessionStorage.getItem('ib_admin_ok') === '1') {
+          adminHash = sessionStorage.getItem('ib_admin_hash') || null;
           document.getElementById('admin-content').style.display = 'block';
           renderUsers();
           return;
@@ -349,30 +350,57 @@
       document.getElementById('admin-guard').style.display = 'block';
     })();
 
-    function getUsers() {
-      try { return JSON.parse(localStorage.getItem('ib_users') || '[]'); }
-      catch(e) { return []; }
-    }
-    function saveUsers(arr) {
-      localStorage.setItem('ib_users', JSON.stringify(arr));
+    async function apiCall(payload) {
+      var resp = await fetch(SHEETS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      });
+      return resp;
     }
 
-    function renderUsers() {
-      var users  = getUsers();
-      var tbody  = document.getElementById('users-tbody');
-      var table  = document.getElementById('users-table');
-      var empty  = document.getElementById('users-empty');
+    async function apiGet(payload) {
+      var params = Object.keys(payload).map(function(k) {
+        return encodeURIComponent(k) + '=' + encodeURIComponent(payload[k]);
+      }).join('&');
+      var resp = await fetch(SHEETS_URL + '?' + params);
+      return await resp.json();
+    }
 
-      if (users.length === 0) {
-        table.style.display = 'none';
+    var cachedUsers = [];
+
+    async function renderUsers() {
+      var tbody = document.getElementById('users-tbody');
+      var table = document.getElementById('users-table');
+      var empty = document.getElementById('users-empty');
+      empty.textContent = 'Caricamento utenti…';
+      empty.style.display = 'block';
+      table.style.display = 'none';
+
+      try {
+        var json = await apiGet({ action: 'getUsers', adminHash: adminHash || '' });
+        if (json.success) {
+          cachedUsers = json.users || [];
+        } else {
+          empty.textContent = 'Errore: ' + json.message;
+          return;
+        }
+      } catch(e) {
+        empty.textContent = 'Impossibile connettersi allo script.';
+        return;
+      }
+
+      if (cachedUsers.length === 0) {
+        empty.textContent = 'Nessun utente configurato — verrà usato l'accesso predefinito.';
         empty.style.display = 'block';
+        table.style.display = 'none';
         return;
       }
       table.style.display = 'table';
       empty.style.display = 'none';
       tbody.innerHTML = '';
-
-      users.forEach(function(u, i) {
+      cachedUsers.forEach(function(u, i) {
         var tr = document.createElement('tr');
         var active = u.active !== false;
         tr.innerHTML =
@@ -413,71 +441,57 @@
         showToast('toast-add','error','La password deve essere di almeno 8 caratteri.'); return;
       }
 
-      var users = getUsers();
-
-      // Check duplicate username (excluding current if editing)
-      var dup = users.find(function(u, i) {
-        return u.username.toLowerCase() === username && i !== editIndex;
-      });
-      if (dup) { showToast('toast-add','error','Nome utente già esistente.'); return; }
-
-      if (editIndex === -1) {
-        // New user
-        var hash = await sha256(password);
-        users.push({ username: username, hash: hash, role: role, active: true });
-        showToast('toast-add','success','✓ Utente <strong>' + escHtml(username) + '</strong> aggiunto.');
-      } else {
-        // Edit existing
-        users[editIndex].username = username;
-        users[editIndex].role     = role;
-        if (password.length >= 8) {
-          users[editIndex].hash = await sha256(password);
+      var hash = password.length >= 8 ? await sha256(password) : '';
+      try {
+        var json = await apiGet({
+          action: 'saveUser', adminHash: adminHash || '',
+          username: username, hash: hash, role: role, editIndex: editIndex
+        });
+        if (json.success) {
+          showToast('toast-add','success','✓ Utente <strong>' + escHtml(username) + '</strong> salvato.');
+          cancelEdit();
+          renderUsers();
+        } else {
+          showToast('toast-add','error', json.message || 'Errore.');
         }
-        showToast('toast-add','success','✓ Utente <strong>' + escHtml(username) + '</strong> aggiornato.');
-        cancelEdit();
+      } catch(e) {
+        showToast('toast-add','error','Errore di connessione.');
       }
-
-      saveUsers(users);
-      renderUsers();
-      document.getElementById('new-user').value = '';
-      document.getElementById('new-pass').value = '';
-      document.getElementById('new-role').value = 'user';
     }
 
     function editUser(i) {
-      var users = getUsers();
-      var u = users[i];
-      document.getElementById('new-user').value  = u.username;
-      document.getElementById('new-pass').value  = '';
-      document.getElementById('new-role').value  = u.role || 'user';
+      var u = cachedUsers[i];
+      document.getElementById('new-user').value   = u.username;
+      document.getElementById('new-pass').value   = '';
+      document.getElementById('new-role').value   = u.role || 'user';
       document.getElementById('edit-index').value = i;
-      document.getElementById('form-title').textContent = 'Modifica utente';
+      document.getElementById('form-title').textContent    = 'Modifica utente';
       document.getElementById('save-btn-text').textContent = 'Aggiorna utente';
       document.getElementById('new-user').focus();
     }
 
     function cancelEdit() {
-      document.getElementById('new-user').value  = '';
-      document.getElementById('new-pass').value  = '';
-      document.getElementById('new-role').value  = 'user';
+      document.getElementById('new-user').value   = '';
+      document.getElementById('new-pass').value   = '';
+      document.getElementById('new-role').value   = 'user';
       document.getElementById('edit-index').value = -1;
-      document.getElementById('form-title').textContent = 'Aggiungi utente';
+      document.getElementById('form-title').textContent    = 'Aggiungi utente';
       document.getElementById('save-btn-text').textContent = 'Salva utente';
     }
 
-    function toggleActive(i) {
-      var users = getUsers();
-      users[i].active = !(users[i].active !== false);
-      saveUsers(users);
-      renderUsers();
+    async function toggleActive(i) {
+      try {
+        await apiGet({ action: 'toggleUser', adminHash: adminHash || '', index: i });
+        renderUsers();
+      } catch(e) { showToast('toast-add','error','Errore di connessione.'); }
     }
 
-    function deleteUser(i) {
+    async function deleteUser(i) {
       if (!confirm('Eliminare questo utente?')) return;
-      var users = getUsers();
-      users.splice(i, 1);
-      saveUsers(users);
-      renderUsers();
+      try {
+        await apiGet({ action: 'deleteUser', adminHash: adminHash || '', index: i });
+        renderUsers();
+      } catch(e) { showToast('toast-add','error','Errore di connessione.'); }
     }
   </script>
 </body>
