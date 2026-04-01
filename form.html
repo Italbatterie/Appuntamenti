@@ -40,6 +40,7 @@
   </div>
 
 
+  <script src="config.js"></script>
   <script>
     // Auth guard — runs before page renders
     (function() {
@@ -624,7 +625,7 @@
 <body>
 
   <div class="topbar"></div>
-  <input type="hidden" id="sheets-url" value="https://script.google.com/macros/s/AKfycbzozBZl49FkMiNe5kFpV1bI_hD8sKt1nF8zbL5MxIgdND-Z3TTP_YBZ8umuuJwn6DXxgg/exec"/>
+  <input type="hidden" id="sheets-url" value=IB_CONFIG.SHEETS_URL/>
 
   <!-- FULL-WIDTH HEADER -->
   <header class="site-header">
@@ -1156,7 +1157,7 @@
       var hash = await sha256(password);
 
       try {
-        var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzozBZl49FkMiNe5kFpV1bI_hD8sKt1nF8zbL5MxIgdND-Z3TTP_YBZ8umuuJwn6DXxgg/exec';
+        var SHEETS_URL = IB_CONFIG.SHEETS_URL;
         var url = SHEETS_URL
           + '?action=login'
           + '&username=' + encodeURIComponent('__admincheck__')

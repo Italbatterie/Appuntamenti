@@ -307,8 +307,9 @@
     </div><!-- /admin-content -->
   </div>
 
+  <script src="config.js"></script>
   <script>
-    var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzozBZl49FkMiNe5kFpV1bI_hD8sKt1nF8zbL5MxIgdND-Z3TTP_YBZ8umuuJwn6DXxgg/exec';
+    var SHEETS_URL = IB_CONFIG.SHEETS_URL;
     var adminHash = null; // set after auth
 
     // SHA-256 via SubtleCrypto
