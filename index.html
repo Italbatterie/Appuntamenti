@@ -403,6 +403,19 @@
       .header-divider, .header-sub { display: none; }
     }
 
+    /* ── SIDEBAR LAYOUT SHIFT ── */
+    .page-wrap {
+      transition: margin-right 0.28s cubic-bezier(.4,0,.2,1);
+    }
+    body.sidebar-open .page-wrap {
+      margin-right: 400px;
+    }
+    @media (max-width: 900px) {
+      body.sidebar-open .page-wrap {
+        margin-right: 0;
+      }
+    }
+
     /* ── SIDEBAR SCRIPT ── */
     .sidebar-overlay {
       display: none;
