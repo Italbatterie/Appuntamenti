@@ -1169,7 +1169,7 @@
         // Generate a short-lived token (60 seconds) to pass auth to new tab
         var token = await sha256('ib_admin_' + Date.now().toString().slice(0,-3));
         localStorage.setItem('ib_admin_token', JSON.stringify({
-          t: token, exp: Date.now() + 60000
+          t: token, h: hash, exp: Date.now() + 60000
         }));
         window.open('admin.html?t=' + token.slice(0,16), '_blank');
       } else {

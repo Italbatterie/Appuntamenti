@@ -366,10 +366,7 @@
         .map(function(b) { return b.toString(16).padStart(2,'0'); }).join('');
     }
 
-    function getUsers() {
-      try { return JSON.parse(localStorage.getItem('ib_users') || '[]'); }
-      catch(e) { return []; }
-    }
+    var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzozBZl49FkMiNe5kFpV1bI_hD8sKt1nF8zbL5MxIgdND-Z3TTP_YBZ8umuuJwn6DXxgg/exec';
 
     var loginBtn  = document.getElementById('login-btn');
     var loginText = document.getElementById('login-text');
@@ -386,35 +383,63 @@
       var username = document.getElementById('username').value.trim().toLowerCase();
       var password = document.getElementById('password').value;
       var hash     = await sha256(password);
-      var users    = getUsers();
-      var match    = null;
 
-      if (users.length === 0) {
-        var defHash = await sha256('Italbatterie2025!');
-        if (username === 'admin' && hash === defHash) {
-          match = { username: 'admin', role: 'admin' };
-        }
-      } else {
-        match = users.find(function(u) {
-          return u.username.toLowerCase() === username
-              && u.hash === hash
-              && u.active !== false;
-        }) || null;
-      }
-
-      if (match) {
-        localStorage.setItem('ib_auth', JSON.stringify({
-          ok: true, user: match.username, role: match.role || 'user',
-          exp: Date.now() + 8 * 60 * 60 * 1000
-        }));
-        window.location.replace('form.html');
-      } else {
-        errMsg.classList.add('show');
-        loginBtn.disabled = false;
-        loginText.style.display = '';
-        spinner.style.display = 'none';
+      try {
+        fetch(SHEETS_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'login', username: username, hash: hash })
+        }).then(function() {
+          // no-cors: cannot read response — use local fallback verification
+          localLogin(username, hash);
+        }).catch(function() {
+          localLogin(username, hash);
+        });
+      } catch(err) {
+        localLogin(username, hash);
       }
     });
+
+    // Fallback locale + verifica remota tramite GET leggibile
+    async function localLogin(username, hash) {
+      // Prova prima via GET (risposta leggibile)
+      try {
+        var url = SHEETS_URL + '?action=login&username=' + encodeURIComponent(username) + '&hash=' + encodeURIComponent(hash);
+        var resp = await fetch(url);
+        var json = await resp.json();
+        if (json && json.success) {
+          saveSession(json.username || username, json.role || 'user');
+          return;
+        } else {
+          showError();
+          return;
+        }
+      } catch(err) {
+        // Script non raggiungibile — fallback credenziale default locale
+        var defHash = await sha256('Italbatterie2025!');
+        if (username === 'admin' && hash === defHash) {
+          saveSession('admin', 'admin');
+        } else {
+          showError();
+        }
+      }
+    }
+
+    function saveSession(user, role) {
+      localStorage.setItem('ib_auth', JSON.stringify({
+        ok: true, user: user, role: role,
+        exp: Date.now() + 8 * 60 * 60 * 1000
+      }));
+      window.location.replace('form.html');
+    }
+
+    function showError() {
+      document.getElementById('error-msg').classList.add('show');
+      loginBtn.disabled = false;
+      loginText.style.display = '';
+      spinner.style.display = 'none';
+    }
   </script>
 </body>
 </html>
