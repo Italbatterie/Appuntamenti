@@ -1,6 +1,45 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+  <!-- ADMIN ACCESS MODAL -->
+  <div id="admin-modal" style="display:none;position:fixed;inset:0;background:rgba(0,35,50,0.55);z-index:600;align-items:center;justify-content:center">
+    <div style="background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,35,50,0.22);width:100%;max-width:360px;overflow:hidden;animation:fadeUp 0.25s ease both;margin:1rem">
+      <div style="background:#00475d;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-family:'Inter Tight',sans-serif;font-size:0.95rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="6" width="10" height="7" rx="1.5" stroke="white" stroke-width="1.4"/><path d="M4.5 6V4.5a2.5 2.5 0 015 0V6" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Accesso Amministrazione
+        </span>
+        <button id="admin-modal-close" style="background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:0.9rem" onclick="closeAdminModal()">&times;</button>
+      </div>
+      <div style="padding:1.5rem">
+        <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:1rem">
+          <label style="font-size:0.70rem;font-weight:600;color:#6b8a92;letter-spacing:0.05em;text-transform:uppercase">Password amministratore</label>
+          <div style="position:relative">
+            <input type="password" id="admin-pass-input" placeholder="••••••••"
+              style="width:100%;padding:9px 38px 9px 12px;font-size:0.9rem;font-family:'Inter',sans-serif;border:1.5px solid #c4d5d9;border-radius:8px;background:#f7fafb;color:#1c2b30;outline:none"
+              onkeydown="if(event.key==='Enter')checkAdminPass()"
+              onfocus="this.style.borderColor='#00475d';this.style.boxShadow='0 0 0 3px rgba(0,71,93,0.10)'"
+              onblur="this.style.borderColor='#c4d5d9';this.style.boxShadow='none'"/>
+            <button type="button" onclick="toggleAdminPw()" tabindex="-1"
+              style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#6b8a92;display:flex;align-items:center">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1 7.5s2.5-5 6.5-5 6.5 5 6.5 5-2.5 5-6.5 5-6.5-5-6.5-5z" stroke="currentColor" stroke-width="1.4"/><circle cx="7.5" cy="7.5" r="2" stroke="currentColor" stroke-width="1.4"/></svg>
+            </button>
+          </div>
+        </div>
+        <button onclick="checkAdminPass()"
+          style="width:100%;padding:11px;font-size:0.9rem;font-weight:600;font-family:'Inter',sans-serif;background:#00475d;color:#fff;border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"
+          onmouseover="this.style.background='#003347'" onmouseout="this.style.background='#00475d'">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="6" width="10" height="7" rx="1.5" stroke="white" stroke-width="1.4"/><path d="M4.5 6V4.5a2.5 2.5 0 015 0V6" stroke="white" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Accedi al pannello
+        </button>
+        <div id="admin-modal-err" style="display:none;margin-top:10px;padding:9px 12px;background:#fdf0f0;color:#9b2c2c;border:1px solid #f5bbbb;border-radius:8px;font-size:0.82rem;font-weight:500">
+          Password non corretta.
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <script>
     // Auth guard — runs before page renders
     (function() {
@@ -601,6 +640,13 @@
       </div>
     </div>
     <div class="header-right">
+      <button type="button" class="header-nav-btn" id="admin-btn">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="flex-shrink:0">
+          <circle cx="6.5" cy="4.5" r="2.5" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M1.5 12c0-2.5 2.2-4.5 5-4.5s5 2 5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        Amministrazione
+      </button>
       <button type="button" class="header-nav-btn" id="logout-btn" style="background:rgba(255,100,80,0.18);border-color:rgba(255,150,130,0.4)">
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none" style="flex-shrink:0">
           <path d="M5 1H2a1 1 0 00-1 1v9a1 1 0 001 1h3M9 9l3-3-3-3M12 6.5H5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -846,6 +892,13 @@
 
 
   <script>
+    // SHA-256 utility
+    async function sha256(str) {
+      var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf))
+        .map(function(b) { return b.toString(16).padStart(2,'0'); }).join('');
+    }
+
     var today = new Date().toISOString().split('T')[0];
     document.getElementById('data').setAttribute('min', today);
     document.getElementById('footer-date').textContent = new Date().toLocaleDateString('it-IT', {
@@ -1072,6 +1125,48 @@
       sessionStorage.removeItem('ib_auth');
       window.location.replace('index.html');
     });
+    // Admin modal
+    function openAdminModal() {
+      var m = document.getElementById('admin-modal');
+      m.style.display = 'flex';
+      document.getElementById('admin-pass-input').value = '';
+      document.getElementById('admin-modal-err').style.display = 'none';
+      setTimeout(function() { document.getElementById('admin-pass-input').focus(); }, 80);
+    }
+    function closeAdminModal() {
+      document.getElementById('admin-modal').style.display = 'none';
+    }
+    function toggleAdminPw() {
+      var inp = document.getElementById('admin-pass-input');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+    async function checkAdminPass() {
+      var password = document.getElementById('admin-pass-input').value;
+      var hash = await sha256(password);
+      var users = JSON.parse(localStorage.getItem('ib_users') || '[]');
+      var match = null;
+      if (users.length === 0) {
+        var defHash = await sha256('Italbatterie2025!');
+        if (hash === defHash) match = { role: 'admin' };
+      } else {
+        match = users.find(function(u) {
+          return u.hash === hash && u.role === 'admin' && u.active !== false;
+        }) || null;
+      }
+      if (match) {
+        closeAdminModal();
+        window.open('admin.html', '_blank');
+      } else {
+        document.getElementById('admin-modal-err').style.display = 'block';
+        document.getElementById('admin-pass-input').focus();
+      }
+    }
+    document.getElementById('admin-btn').addEventListener('click', openAdminModal);
+    // Close on backdrop click
+    document.getElementById('admin-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeAdminModal();
+    });
+
   </script>
 </body>
 </html>
