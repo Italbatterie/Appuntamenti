@@ -1155,7 +1155,12 @@
       }
       if (match) {
         closeAdminModal();
-        window.open('admin.html', '_blank');
+        // Generate a short-lived token (60 seconds) to pass auth to new tab
+        var token = await sha256('ib_admin_' + Date.now().toString().slice(0,-3));
+        localStorage.setItem('ib_admin_token', JSON.stringify({
+          t: token, exp: Date.now() + 60000
+        }));
+        window.open('admin.html?t=' + token.slice(0,16), '_blank');
       } else {
         document.getElementById('admin-modal-err').style.display = 'block';
         document.getElementById('admin-pass-input').focus();

@@ -321,18 +321,26 @@
       inp.type = inp.type === 'password' ? 'text' : 'password';
     }
 
-    // Auth guard — only admins
+    // Auth guard — token passed via URL from form.html
     (function() {
       try {
-        var s = JSON.parse(sessionStorage.getItem('ib_auth') || 'null');
-        if (s && s.ok && Date.now() < s.exp && s.role === 'admin') {
-          document.getElementById('admin-content').style.display = 'block';
-          renderUsers();
-          return;
+        // Check URL token
+        var urlToken = new URLSearchParams(window.location.search).get('t');
+        if (urlToken) {
+          var stored = JSON.parse(localStorage.getItem('ib_admin_token') || 'null');
+          if (stored && Date.now() < stored.exp && stored.t.slice(0,16) === urlToken) {
+            localStorage.removeItem('ib_admin_token'); // one-time use
+            // Store admin session for this tab
+            sessionStorage.setItem('ib_admin_ok', '1');
+            // Clean URL
+            history.replaceState(null, '', 'admin.html');
+            document.getElementById('admin-content').style.display = 'block';
+            renderUsers();
+            return;
+          }
         }
-        // Check default admin
-        var users = JSON.parse(localStorage.getItem('ib_users') || '[]');
-        if (users.length === 0 && s && s.ok && s.user === 'admin') {
+        // Check tab session (already authenticated in this tab)
+        if (sessionStorage.getItem('ib_admin_ok') === '1') {
           document.getElementById('admin-content').style.display = 'block';
           renderUsers();
           return;
