@@ -43,16 +43,16 @@
   <script>
     // Auth guard — runs before page renders
     (function() {
-      var session = sessionStorage.getItem('ib_auth');
+      var session = localStorage.getItem('ib_auth');
       if (!session) { window.location.replace('index.html'); return; }
       try {
         var s = JSON.parse(session);
         if (!s.ok || Date.now() > s.exp) {
-          sessionStorage.removeItem('ib_auth');
+          localStorage.removeItem('ib_auth');
           window.location.replace('index.html');
         }
       } catch(e) {
-        sessionStorage.removeItem('ib_auth');
+        localStorage.removeItem('ib_auth');
         window.location.replace('index.html');
       }
     })();
@@ -1131,10 +1131,10 @@
     document.getElementById('script-close').addEventListener('click', closeSidebar);
     // overlay click disabled — pannello si chiude solo con X
 
-    // Logout
+    // Logout — cache-busting parameter forces fresh load of index.html
     document.getElementById('logout-btn').addEventListener('click', function() {
-      sessionStorage.removeItem('ib_auth');
-      window.location.replace('index.html');
+      localStorage.removeItem('ib_auth');
+      window.location.replace('index.html?t=' + Date.now());
     });
     // Admin modal
     function openAdminModal() {
