@@ -3,1047 +3,288 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Modulo Appuntamenti</title>
+  <title>Accesso — Modulo Appuntamenti</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@700&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --blue:       #00475d;
-      --blue-dark:  #003347;
-      --blue-xlight:#f0f7fa;
-      --accent:     #00b4d8;
-      --white:      #ffffff;
-      --gray-900:   #1c2b30;
-      --gray-500:   #6b8a92;
-      --gray-300:   #c4d5d9;
-      --gray-100:   #eef4f6;
-      --gray-50:    #f7fafb;
-      --success:    #1a7a4a;
-      --success-bg: #e6f5ee;
-      --success-bd: #a8d8bc;
-      --error:      #9b2c2c;
-      --error-bg:   #fdf0f0;
-      --error-bd:   #f5bbbb;
-      --radius-sm:  6px;
-      --radius-md:  10px;
-      --radius-lg:  16px;
-      --shadow:     0 4px 32px rgba(0,71,93,0.11), 0 1px 4px rgba(0,71,93,0.06);
+      --blue:      #00475d;
+      --blue-dark: #003347;
+      --accent:    #00b4d8;
+      --white:     #ffffff;
+      --gray-900:  #1c2b30;
+      --gray-500:  #6b8a92;
+      --gray-300:  #c4d5d9;
+      --gray-100:  #eef4f6;
+      --gray-50:   #f7fafb;
+      --error:     #9b2c2c;
+      --error-bg:  #fdf0f0;
+      --error-bd:  #f5bbbb;
+      --radius-md: 10px;
+      --radius-lg: 16px;
     }
-
     html, body {
       min-height: 100vh;
       background: var(--gray-100);
       font-family: 'Inter', sans-serif;
       color: var(--gray-900);
-    }
-    body {
       display: flex;
       flex-direction: column;
-      align-items: stretch;
-      padding-bottom: 5rem;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
     }
-
-    /* ── TOP SHIMMER ── */
     .topbar {
       position: fixed;
       top: 0; left: 0; right: 0; height: 3px;
       background: linear-gradient(90deg, var(--blue) 0%, var(--accent) 50%, var(--blue) 100%);
       background-size: 200% 100%;
       animation: shimmer 3s linear infinite;
-      z-index: 200;
     }
     @keyframes shimmer {
       from { background-position: 200% 0; }
       to   { background-position: -200% 0; }
     }
-
-    /* ── FULL-WIDTH HEADER ── */
-    .site-header {
-      background: var(--blue);
-      width: 100%;
-      padding: 0 3rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 76px;
-      margin-top: 3px;
-      position: relative;
-      overflow: hidden;
-    }
-    .site-header::before {
-      content: '';
-      position: absolute; right: -50px; top: -60px;
-      width: 280px; height: 280px; border-radius: 50%;
-      background: rgba(255,255,255,0.035);
-      pointer-events: none;
-    }
-    .site-header::after {
-      content: '';
-      position: absolute; right: 120px; bottom: -90px;
-      width: 220px; height: 220px; border-radius: 50%;
-      background: rgba(0,180,216,0.07);
-      pointer-events: none;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      z-index: 1;
-    }
-    .header-logo-wrap {
-      background: transparent;
-      border-radius: 0;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 54px;
-      flex-shrink: 0;
-    }
-    .header-logo-wrap img {
-      height: 54px;
-      width: auto;
-      display: block;
-    }
-    /* SVG fallback shown if img fails */
-    .logo-fallback {
-      height: 34px;
-      width: auto;
-      display: none;
-    }
-    .header-divider {
-      width: 1px; height: 34px;
-      background: rgba(255,255,255,0.2);
-      flex-shrink: 0;
-    }
-    .header-titles { display: flex; flex-direction: column; gap: 2px; }
-    .header-title {
-      font-family: 'Inter Tight', sans-serif;
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--white);
-      letter-spacing: -0.01em;
-      line-height: 1.2;
-    }
-    .header-sub {
-      font-size: 0.72rem;
-      color: rgba(255,255,255,0.55);
-      font-weight: 400;
-    }
-    .header-right {
-      display: flex; align-items: center; gap: 8px; z-index: 1;
-    }
-    .header-nav-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 7px 16px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      font-family: 'Inter', sans-serif;
-      color: rgba(255,255,255,0.92);
-      background: rgba(255,255,255,0.12);
-      border: 1.5px solid rgba(255,255,255,0.3);
-      border-radius: 20px;
-      text-decoration: none;
-      letter-spacing: 0.02em;
-      transition: background 0.15s, border-color 0.15s;
-      white-space: nowrap;
-      z-index: 1;
-    }
-    .header-nav-btn:hover {
-      background: rgba(255,255,255,0.22);
-      border-color: rgba(255,255,255,0.5);
-    }
-
-    .header-badge {
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      background: rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.85);
-      padding: 4px 11px;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.15);
-    }
-
-    /* ── PAGE WRAPPER ── */
-    .page-wrap {
-      width: 100%;
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 2.5rem 2.5rem 0;
-    }
-
-    /* ── CARD ── */
-    .card {
+    .login-card {
       background: var(--white);
       border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
+      box-shadow: 0 4px 32px rgba(0,71,93,0.11), 0 1px 4px rgba(0,71,93,0.06);
       overflow: hidden;
+      width: 100%;
+      max-width: 420px;
       animation: fadeUp 0.35s ease both;
     }
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from { opacity:0; transform: translateY(14px); }
+      to   { opacity:1; transform: translateY(0); }
     }
-
-    /* ── TWO-COLUMN LAYOUT ── */
-    .form-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-    .form-col {
-      padding: 2rem 2.25rem;
-    }
-    .form-col + .form-col {
-      border-left: 1px solid var(--gray-100);
-    }
-
-    /* ── SECTION HEADING ── */
-    .section-heading {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.8rem;
-      border-bottom: 1.5px solid var(--gray-100);
-    }
-    .section-num {
-      width: 26px; height: 26px;
+    .login-header {
       background: var(--blue);
-      color: var(--white);
-      font-size: 0.72rem;
-      font-weight: 700;
-      border-radius: 50%;
+      padding: 2rem 2rem 1.75rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-header::after {
+      content: '';
+      position: absolute; right: -40px; top: -40px;
+      width: 160px; height: 160px; border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+      pointer-events: none;
+    }
+    .login-logo {
+      width: 72px; height: 72px;
+      background: var(--white);
+      border-radius: var(--radius-md);
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      font-family: 'Inter Tight', sans-serif;
+      margin: 0 auto 1rem;
     }
-    .section-title {
+    .login-logo img { height: 52px; width: auto; display: block; }
+    .login-title {
       font-family: 'Inter Tight', sans-serif;
-      font-size: 0.92rem;
+      font-size: 1.15rem;
       font-weight: 700;
-      color: var(--blue);
+      color: var(--white);
     }
-
-    /* ── FORM FIELDS ── */
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    .login-sub {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.55);
+      margin-top: 4px;
     }
-    .form-group { display: flex; flex-direction: column; gap: 4px; }
-    .form-group.full { grid-column: 1 / -1; }
-
+    .login-body { padding: 2rem; }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 1rem;
+    }
     label {
-      font-size: 0.70rem;
+      font-size: 0.72rem;
       font-weight: 600;
       color: var(--gray-500);
       letter-spacing: 0.05em;
       text-transform: uppercase;
     }
-    label .req { color: var(--blue); margin-left: 2px; }
-
-    input[type="text"],
-    input[type="tel"],
-    input[type="email"],
-    input[type="date"],
-    input[type="time"],
-    input[type="number"],
-    select,
-    textarea {
+    input {
       width: 100%;
-      padding: 8px 11px;
-      font-size: 0.88rem;
+      padding: 10px 13px;
+      font-size: 0.92rem;
       font-family: 'Inter', sans-serif;
       border: 1.5px solid var(--gray-300);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       background: var(--gray-50);
       color: var(--gray-900);
       outline: none;
       transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
       -webkit-appearance: none;
-      appearance: none;
     }
-    input:focus, select:focus, textarea:focus {
+    input:focus {
       border-color: var(--blue);
       background: var(--white);
       box-shadow: 0 0 0 3px rgba(0,71,93,0.10);
     }
-    input:hover:not(:focus), select:hover:not(:focus), textarea:hover:not(:focus) {
-      border-color: var(--gray-500);
-    }
-    select {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b8a92' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 11px center;
-      padding-right: 32px;
-      cursor: pointer;
-    }
-    textarea { resize: vertical; min-height: 88px; line-height: 1.55; }
-
-    /* ── ACTION AREA ── */
-    .action-area {
-      padding: 1.5rem 2.25rem 2rem;
-      background: var(--gray-50);
-      border-top: 1px solid var(--gray-100);
-    }
-    .action-label {
-      font-size: 0.67rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gray-500);
-      margin-bottom: 0.9rem;
-    }
-    .action-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .action-buttons > * { min-width: 0; }
-
-    .btn-primary {
-      padding: 12px 24px;
-      font-size: 0.9rem; font-weight: 600;
-      font-family: 'Inter', sans-serif;
-      background: var(--blue); color: var(--white);
-      border: none; border-radius: var(--radius-md);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: background 0.15s, transform 0.1s;
-    }
-    .btn-primary:hover  { background: var(--blue-dark); }
-    .btn-primary:active { transform: scale(0.99); }
-    .btn-primary:disabled { background: var(--gray-300); color: var(--gray-500); cursor: not-allowed; }
-
-    .btn-secondary {
-      padding: 12px 24px;
-      font-size: 0.9rem; font-weight: 600;
-      font-family: 'Inter', sans-serif;
-      background: var(--white); color: var(--blue);
-      border: 1.5px solid var(--blue); border-radius: var(--radius-md);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: background 0.15s, transform 0.1s;
-    }
-    .btn-secondary:hover  { background: var(--blue-xlight); }
-    .btn-secondary:active { transform: scale(0.99); }
-    .btn-secondary:disabled { border-color: var(--gray-300); color: var(--gray-500); background: var(--white); cursor: not-allowed; }
-
-    .btn-combined {
-      padding: 12px 24px;
-      font-size: 0.9rem; font-weight: 600;
-      font-family: 'Inter', sans-serif;
-      background: var(--blue-dark); color: var(--white);
-      border: none; border-radius: var(--radius-md);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: background 0.15s, transform 0.1s;
-      grid-column: 1 / -1;
+    .btn-login {
       width: 100%;
+      margin-top: 0.25rem;
+      padding: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      background: var(--blue);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
     }
-    .btn-combined:hover  { background: #002535; }
-    .btn-combined:active { transform: scale(0.99); }
-    .btn-combined:disabled { background: var(--gray-300); color: var(--gray-500); cursor: not-allowed; }
-
+    .btn-login:hover  { background: var(--blue-dark); }
+    .btn-login:active { transform: scale(0.99); }
+    .btn-login:disabled { background: var(--gray-300); cursor: not-allowed; }
     .spinner {
-      width: 15px; height: 15px;
-      border: 2px solid currentColor; border-top-color: transparent;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: var(--white);
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
-      display: none; flex-shrink: 0;
+      display: none;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    .toast {
-      display: none; align-items: center; gap: 9px;
-      padding: 10px 13px; border-radius: var(--radius-md);
-      margin-top: 10px; font-size: 0.83rem; font-weight: 500;
-      border: 1px solid; animation: fadeUp 0.2s ease both;
-    }
-    .toast.show    { display: flex; }
-    .toast.success { background: var(--success-bg); color: var(--success); border-color: var(--success-bd); }
-    .toast.error   { background: var(--error-bg);   color: var(--error);   border-color: var(--error-bd); }
-
-    /* ── CARD FOOTER ── */
-    .card-footer {
-      background: var(--blue);
-      padding: 0.9rem 2.25rem;
-      display: flex; align-items: center; justify-content: space-between; gap: 8px;
-    }
-    .footer-brand {
-      display: flex; align-items: center; gap: 7px;
-      font-size: 0.73rem; color: rgba(255,255,255,0.7); font-weight: 500;
-    }
-    .footer-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ddfb0; flex-shrink: 0; }
-    .footer-date { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 900px) {
-      .form-layout { grid-template-columns: 1fr; }
-      .form-col + .form-col { border-left: none; border-top: 1px solid var(--gray-100); }
-      .header-right { display: none; }
-    }
-    @media (max-width: 640px) {
-      .site-header { padding: 0 1.25rem; min-height: 62px; }
-      .page-wrap { padding: 1.5rem 0.75rem 0; }
-      .form-col { padding: 1.5rem 1.25rem; }
-      .action-area { padding: 1.25rem 1.25rem 1.75rem; }
-      .card-footer { padding: 0.75rem 1.25rem; flex-direction: column; align-items: flex-start; gap: 3px; }
-      .form-grid { grid-template-columns: 1fr; }
-      .form-group.full { grid-column: 1; }
-      .action-buttons > * { min-width: 100%; }
-      .header-divider, .header-sub { display: none; }
-    }
-
-    /* ── SIDEBAR LAYOUT SHIFT ── */
-    .page-wrap {
-      transition: margin-right 0.28s cubic-bezier(.4,0,.2,1);
-    }
-    body.sidebar-open .page-wrap {
-      margin-right: 400px;
-    }
-    @media (max-width: 900px) {
-      body.sidebar-open .page-wrap {
-        margin-right: 0;
-      }
-    }
-
-    /* ── SIDEBAR SCRIPT ── */
-    .sidebar-overlay {
+    .error-msg {
       display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,35,50,0.25);
-      z-index: 400;
-    }
-    .sidebar-overlay.open { display: block; }
-
-    .sidebar {
-      position: fixed;
-      top: 0; right: 0; bottom: 0;
-      width: 400px;
-      max-width: 92vw;
-      background: var(--white);
-      box-shadow: -4px 0 32px rgba(0,35,50,0.15);
-      z-index: 401;
-      display: flex;
-      flex-direction: column;
-      transform: translateX(100%);
-      transition: transform 0.28s cubic-bezier(.4,0,.2,1);
-    }
-    .sidebar.open { transform: translateX(0); }
-
-    .sidebar-header {
-      background: var(--blue);
-      padding: 1rem 1.25rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-    .sidebar-title {
-      font-family: 'Inter Tight', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--white);
-      display: flex;
       align-items: center;
       gap: 8px;
-    }
-    .sidebar-close {
-      background: rgba(255,255,255,0.15);
-      border: none;
-      border-radius: 50%;
-      width: 28px; height: 28px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      color: var(--white);
-      font-size: 0.95rem;
-      line-height: 1;
-      transition: background 0.15s;
-      flex-shrink: 0;
-    }
-    .sidebar-close:hover { background: rgba(255,255,255,0.28); }
-
-    .sidebar-body {
-      padding: 1.25rem;
-      overflow-y: auto;
-      flex: 1;
+      padding: 10px 13px;
+      background: var(--error-bg);
+      color: var(--error);
+      border: 1px solid var(--error-bd);
+      border-radius: var(--radius-md);
       font-size: 0.84rem;
-      color: var(--gray-900);
-      line-height: 1.7;
+      font-weight: 500;
+      margin-top: 0.75rem;
+      animation: fadeUp 0.2s ease both;
     }
-    .sidebar-body p { margin: 0 0 0.65rem; }
-    .sidebar-body p:last-child { margin-bottom: 0; }
-
-    .script-blank {
-      display: inline-block;
-      border-bottom: 1.5px solid var(--blue);
-      min-width: 120px;
-      color: var(--blue);
-    }
-    .script-section {
-      background: var(--blue-xlight);
-      border-left: 3px solid var(--blue);
-      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-      padding: 0.65rem 0.9rem;
-      margin: 0.65rem 0;
-    }
-    .script-section-title {
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--blue);
-      margin-bottom: 0.4rem;
-    }
-    .script-option {
+    .error-msg.show { display: flex; }
+    .login-footer {
+      padding: 0.9rem 2rem;
       background: var(--gray-50);
-      border: 1px solid var(--gray-300);
-      border-radius: var(--radius-md);
-      padding: 0.8rem 0.9rem;
-      margin: 0.5rem 0;
-    }
-    .script-option-title {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--blue);
-      margin-bottom: 0.35rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .badge-si {
-      background: #e6f5ee; color: #1a7a4a;
-      font-size: 0.65rem; font-weight: 700;
-      padding: 2px 7px; border-radius: 20px;
-    }
-    .badge-no {
-      background: #fdf0f0; color: #9b2c2c;
-      font-size: 0.65rem; font-weight: 700;
-      padding: 2px 7px; border-radius: 20px;
-    }
-    .script-note {
-      background: #fffbea;
-      border: 1px solid #f0d860;
-      border-radius: var(--radius-md);
-      padding: 0.65rem 0.9rem;
-      margin-top: 0.65rem;
-      font-size: 0.8rem;
-      color: #5a4400;
-    }
-    .script-note-title {
-      font-weight: 700;
-      margin-bottom: 0.25rem;
+      border-top: 1px solid var(--gray-100);
+      text-align: center;
       font-size: 0.72rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    @media (max-width: 640px) {
-      .sidebar { width: 100%; max-width: 100%; }
+      color: var(--gray-500);
     }
   </style>
 </head>
 <body>
-
   <div class="topbar"></div>
-  <input type="hidden" id="sheets-url" value="https://script.google.com/macros/s/AKfycbzozBZl49FkMiNe5kFpV1bI_hD8sKt1nF8zbL5MxIgdND-Z3TTP_YBZ8umuuJwn6DXxgg/exec"/>
 
-  <!-- FULL-WIDTH HEADER -->
-  <header class="site-header">
-    <div class="header-left">
-      <div class="header-logo-wrap">
-        <!-- Logo live dal sito Italbatterie; fallback SVG se offline -->
-        <img id="main-logo"
-             src="data:image/png;base64,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"
-             alt="Italbatterie"/>
-        <svg id="logo-svg" class="logo-fallback" viewBox="0 0 120 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none">
-          <rect x="2" y="10" width="26" height="16" rx="3" fill="#00475d"/>
-          <rect x="8" y="8" width="6" height="3" rx="1" fill="#00475d"/>
-          <rect x="20" y="8" width="6" height="3" rx="1" fill="#00475d"/>
-          <rect x="6" y="15" width="6" height="6" rx="1.5" fill="#00b4d8"/>
-          <rect x="15" y="15" width="6" height="6" rx="1.5" fill="#00b4d8"/>
-          <rect x="0" y="13" width="2" height="6" rx="1" fill="#00475d"/>
-          <rect x="28" y="13" width="2" height="6" rx="1" fill="#00475d"/>
-          <text x="36" y="25" font-family="Inter Tight, sans-serif" font-weight="700" font-size="16" fill="#00475d" letter-spacing="-0.5">italbatterie</text>
-        </svg>
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo">
+        <img src="Logo_Nuovo.png" alt="Italbatterie"
+             onerror="this.style.display='none'"/>
       </div>
-      <div class="header-divider"></div>
-      <div class="header-titles">
-        <div class="header-title">Modulo di prenotazione appuntamento</div>
-
-      </div>
+      <div class="login-title">Modulo Appuntamenti</div>
+      <div class="login-sub">Accesso riservato al personale</div>
     </div>
-    <div class="header-right">
-      <button type="button" class="header-nav-btn" id="script-btn">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0">
-          <path d="M2 2h10v10H2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-          <path d="M4 5h6M4 7h6M4 9h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-        </svg>
-        Modello di chiamata
-      </button>
-      <a href="https://italbatterie.github.io/Search/" class="header-nav-btn">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0">
-          <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Cerca appuntamenti
-      </a>
-    </div>
-  </header>
 
-  <!-- PAGE CONTENT -->
-  <div class="page-wrap">
-    <div class="card">
-      <form id="appointment-form" autocomplete="off">
-
-        <div class="form-layout">
-
-          <!-- COL 1: Dati cliente -->
-          <div class="form-col">
-            <div class="section-heading">
-              <div class="section-num">1</div>
-              <div class="section-title">Dati cliente</div>
-            </div>
-            <div class="form-grid">
-              <div class="form-group full">
-                <label for="azienda">Nome azienda <span class="req">*</span></label>
-                <input type="text" id="azienda" placeholder="es. Trasporti Rossi S.r.l." required/>
-              </div>
-              <div class="form-group full">
-                <label for="indirizzo">Indirizzo</label>
-                <input type="text" id="indirizzo" placeholder="Via Roma 12, 20100 Milano"/>
-              </div>
-              <div class="form-group">
-                <label for="nome">Nome</label>
-                <input type="text" id="nome" placeholder="Mario"/>
-              </div>
-              <div class="form-group">
-                <label for="cognome">Cognome</label>
-                <input type="text" id="cognome" placeholder="Rossi"/>
-              </div>
-              <div class="form-group">
-                <label for="telefono">Telefono</label>
-                <input type="tel" id="telefono" placeholder="+39 333 123 4567"/>
-              </div>
-              <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" placeholder="mario.rossi@email.com"/>
-              </div>
-            </div>
-          </div>
-
-          <!-- COL 2: Dettagli appuntamento -->
-          <div class="form-col">
-            <div class="section-heading">
-              <div class="section-num">2</div>
-              <div class="section-title">Dettagli appuntamento</div>
-            </div>
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="data">Data <span class="req">*</span></label>
-                <input type="date" id="data" required/>
-              </div>
-              <div class="form-group">
-                <label for="ora">Ora <span class="req">*</span></label>
-                <input type="time" id="ora" required/>
-              </div>
-              <div class="form-group full">
-                <label for="servizio">Tipo di servizio <span class="req">*</span></label>
-                <select id="servizio" required>
-                  <option value="" disabled selected>Seleziona servizio...</option>
-                  <option value="Controllo batteria singola">Controllo batteria singola</option>
-                  <option value="Controllo parco mezzi completo">Controllo parco mezzi completo</option>
-                  <option value="Primo controllo programmato">Primo controllo programmato</option>
-                  <option value="Controllo periodico">Controllo periodico</option>
-                  <option value="Sostituzione batteria">Sostituzione batteria</option>
-                  <option value="Consulenza flotta">Consulenza flotta</option>
-                  <option value="Altro">Altro</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="num-veicoli">N° veicoli da controllare</label>
-                <input type="number" id="num-veicoli" placeholder="es. 5" min="1"/>
-              </div>
-              <div class="form-group">
-                <label for="tipo-veicoli">Tipo di veicoli</label>
-                <select id="tipo-veicoli">
-                  <option value="" disabled selected>Seleziona...</option>
-                  <option value="Auto">Auto</option>
-                  <option value="Moto">Moto</option>
-                  <option value="Veicoli commerciali">Veicoli commerciali</option>
-                  <option value="Misto">Misto</option>
-                  <option value="Altro">Altro</option>
-                </select>
-              </div>
-              <div class="form-group full">
-                <label for="note">Note / informazioni aggiuntive</label>
-                <textarea id="note" placeholder="Descrivere eventuali problemi noti, modelli di veicolo, esigenze particolari..."></textarea>
-              </div>
-            </div>
-          </div>
-
+    <div class="login-body">
+      <form id="login-form" autocomplete="off">
+        <div class="form-group">
+          <label for="username">Utente</label>
+          <input type="text" id="username" placeholder="Nome utente"
+                 autocomplete="username" required/>
         </div>
-
-        <!-- ACTION AREA -->
-        <div class="action-area">
-          <div class="action-label">Azioni disponibili</div>
-          <div class="action-buttons">
-
-            <button type="submit" class="btn-primary" id="submit-btn">
-              <svg id="submit-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 2v9M8 11l-2.5-2.5M8 11l2.5-2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 14h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
-              <span id="submit-text">Registra appuntamento</span>
-              <span class="spinner" id="submit-spinner"></span>
-            </button>
-
-            <button type="button" class="btn-secondary" id="memo-btn">
-              <svg id="memo-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M5 5.5h6M5 8h6M5 10.5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-              <span id="memo-text">Invia memo appuntamento</span>
-              <span class="spinner" id="memo-spinner"></span>
-            </button>
-
-            <button type="button" class="btn-combined" id="combined-btn">
-              <svg id="combined-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 2v9M8 11l-2.5-2.5M8 11l2.5-2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 14h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                <circle cx="12" cy="4" r="3" fill="currentColor" opacity="0.25"/>
-                <path d="M11 4h2M12 3v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-              </svg>
-              <span id="combined-text">Registra appuntamento e invia memo</span>
-              <span class="spinner" id="combined-spinner"></span>
-            </button>
-
-          </div>
-
-          <div class="toast" id="toast-success">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M4 7l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Appuntamento registrato con successo in Google Sheets!
-          </div>
-          <div class="toast" id="toast-error">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7 4v4M7 10v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            <span id="error-msg">Errore nell'invio. Controlla la connessione.</span>
-          </div>
-          <div class="toast" id="toast-memo-success">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M4 7l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Memo inviato con successo all'indirizzo email indicato!
-          </div>
-          <div class="toast" id="toast-memo-error">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M7 4v4M7 10v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            <span id="memo-error-msg">Inserisci un indirizzo email valido prima di inviare il memo.</span>
-          </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••"
+                 autocomplete="current-password" required/>
         </div>
-
-        <!-- CARD FOOTER -->
-        <div class="card-footer">
-          <div class="footer-brand">
-            <span class="footer-dot"></span>
-            Collegato a Google Sheets
-          </div>
-          <span class="footer-date" id="footer-date"></span>
+        <button type="submit" class="btn-login" id="login-btn">
+          <span id="login-text">Accedi</span>
+          <span class="spinner" id="login-spinner"></span>
+        </button>
+        <div class="error-msg" id="error-msg">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M7 4v4M7 10v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Utente o password non corretti.
         </div>
-
       </form>
     </div>
+
+    <div class="login-footer">Italbatterie &copy; 2025 &middot; Accesso protetto</div>
   </div>
-
-  <!-- SIDEBAR MODELLO DI CHIAMATA -->
-  <div class="sidebar" id="script-sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-title">
-        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-          <rect x="2" y="2" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M4 5.5h7M4 7.5h7M4 9.5h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-        </svg>
-        Modello di chiamata
-      </div>
-      <button class="sidebar-close" id="script-close">&#10005;</button>
-    </div>
-    <div class="sidebar-body">
-
-        <div class="script-section">
-          <div class="script-section-title">Apertura</div>
-          <p>Buongiorno, mi chiamo <span class="script-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> e chiamo per conto di <strong>ITALBATTERIE</strong> di San Vendemiano.</p>
-          <p>La chiamo per informarla che stiamo proponendo una <strong>verifica preliminare GRATUITA</strong> alle aziende della zona che lavorano con vari mezzi.</p>
-          <p>Immagino che lo stato dei vostri mezzi sia un aspetto importante per il vostro lavoro — il mezzo quando serve deve andare, ed i mezzi servono sempre… <em style="color:var(--gray-500)">(nel caso, provare a fare la battuta)</em></p>
-        </div>
-
-        <p style="font-weight:600;color:var(--blue);margin:0.5rem 0 0.25rem">[RISPOSTA DEL CLIENTE]</p>
-
-        <p>Considerando che è una verifica preventiva e gratuita, siete interessati a fissare un appuntamento con un nostro tecnico che interviene direttamente presso la vostra azienda <em>(non dovrete portare i mezzi da noi)</em>?</p>
-
-        <div class="script-option">
-          <div class="script-option-title"><span class="badge-si">SÌ</span> Il cliente è interessato</div>
-          <p>Benissimo, allora le faccio giusto un paio di domande:</p>
-          <ul style="margin:0 0 0.5rem 1.25rem;padding:0">
-            <li>Quanti mezzi avete più o meno? Di che tipo?</li>
-            <li>Da quanto tempo non cambiate le batterie?</li>
-          </ul>
-          <p>Fissare l'appuntamento nei seguenti giorni: <strong>lunedì, martedì e giovedì.</strong></p>
-          <p>Come accennavo, il servizio consiste in una <strong>verifica preliminare gratuita</strong> dello stato della batteria, eseguita direttamente presso la vostra sede. Un nostro tecnico rilascerà un <strong>rapporto di intervento</strong>. In questo modo saprete in anticipo se sarà necessario intervenire su un mezzo, evitando imprevisti in futuro.</p>
-          <p style="color:var(--blue);font-size:0.82rem">💡 Se rilascia la mail, gli arriva anche il memo dell'appuntamento.</p>
-        </div>
-
-        <div class="script-option">
-          <div class="script-option-title"><span class="badge-no">NO</span> Il cliente non è interessato</div>
-          <p>Il servizio che offriamo consiste in una <strong>verifica preliminare gratuita</strong> dello stato della batteria, eseguita direttamente presso la vostra sede. Un nostro tecnico rilascerà un rapporto di intervento — così saprete in anticipo se sarà necessario intervenire ed eviterete imprevisti.</p>
-          <p>Forse questo non è un buon momento: se per lei va bene, ci riserviamo di richiamarla <strong>tra una decina di giorni</strong> così vediamo se è possibile fare la verifica.</p>
-          <ul style="margin:0 0 0.5rem 1.25rem;padding:0;color:var(--gray-700)">
-            <li>Se <strong>continua con il no</strong>: saluta e ringrazia per il tempo</li>
-            <li>Se <strong>cambia idea</strong>: torna al punto SÌ</li>
-            <li>Se <strong>va bene essere ricontattato</strong>: segnati la data e richiama a quella data</li>
-          </ul>
-        </div>
-
-        <div class="script-section" style="margin-top:0.75rem">
-          <div class="script-section-title">Chiusura</div>
-          <p>Convenevoli e chiusura della chiamata.</p>
-        </div>
-
-        <div class="script-note">
-          <div class="script-note-title">📌 Note importanti</div>
-          <p style="margin:0">È importante che il cliente capisca che si tratta di un <strong>servizio gratuito e senza impegno</strong>, con l'obiettivo di prevenire che rimangano a piedi. Deve passare il concetto che <strong>ci ricorderemo noi per loro</strong> di verificare periodicamente le batterie.</p>
-        </div>
-
-    </div>
-  </div>
-
 
   <script>
-    var today = new Date().toISOString().split('T')[0];
-    document.getElementById('data').setAttribute('min', today);
-    document.getElementById('footer-date').textContent = new Date().toLocaleDateString('it-IT', {
-      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-    });
+    // If already logged in redirect immediately
+    (function() {
+      try {
+        var s = JSON.parse(sessionStorage.getItem('ib_auth') || 'null');
+        if (s && s.ok && Date.now() < s.exp) window.location.replace('form.html');
+      } catch(e) {}
+    })();
 
-    var SHEETS_URL = document.getElementById('sheets-url').value;
-
-    function getSheetPayload() {
-      return {
-        action:       'saveAppuntamento',
-        timestamp:    new Date().toLocaleString('it-IT'),
-        azienda:      document.getElementById('azienda').value.trim(),
-        indirizzo:    document.getElementById('indirizzo').value.trim(),
-        nome:         document.getElementById('nome').value.trim(),
-        cognome:      document.getElementById('cognome').value.trim(),
-        telefono:     document.getElementById('telefono').value.trim(),
-        email:        document.getElementById('email').value.trim(),
-        data:         document.getElementById('data').value,
-        ora:          document.getElementById('ora').value,
-        servizio:     document.getElementById('servizio').value,
-        num_veicoli:  document.getElementById('num-veicoli').value || '',
-        tipo_veicoli: document.getElementById('tipo-veicoli').value || '',
-        note:         document.getElementById('note').value.trim()
-      };
+    // SHA-256 via SubtleCrypto — password never stored or visible in plain text
+    async function sha256(str) {
+      var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf))
+        .map(function(b) { return b.toString(16).padStart(2,'0'); }).join('');
     }
 
-    function getMemoPayload() {
-      var nome    = document.getElementById('nome').value.trim();
-      var cognome = document.getElementById('cognome').value.trim();
-      var dataRaw = document.getElementById('data').value;
-      var dataFormatted = dataRaw
-        ? new Date(dataRaw + 'T12:00:00').toLocaleDateString('it-IT', {
-            weekday:'long', day:'numeric', month:'long', year:'numeric'
-          })
-        : '';
-      var payload = {
-        action:    'sendMemo',
-        to:        document.getElementById('email').value.trim(),
-        azienda:   document.getElementById('azienda').value.trim(),
-        indirizzo: document.getElementById('indirizzo').value.trim() || '',
-        referente: (nome || cognome) ? (nome + ' ' + cognome).trim() : '',
-        telefono:  document.getElementById('telefono').value.trim() || '',
-        email:     document.getElementById('email').value.trim(),
-        data:      dataFormatted,
-        ora:       document.getElementById('ora').value || '',
-        servizio:  document.getElementById('servizio').value || ''
-      };
-      console.log('MEMO PAYLOAD:', JSON.stringify(payload));
-      return payload;
+    function getUsers() {
+      try { return JSON.parse(localStorage.getItem('ib_users') || '[]'); }
+      catch(e) { return []; }
     }
 
-    function resetForm() {
-      document.getElementById('appointment-form').reset();
-      document.getElementById('data').setAttribute('min', today);
-      document.getElementById('servizio').value = '';
-      document.getElementById('tipo-veicoli').value = '';
-    }
+    var loginBtn  = document.getElementById('login-btn');
+    var loginText = document.getElementById('login-text');
+    var spinner   = document.getElementById('login-spinner');
+    var errMsg    = document.getElementById('error-msg');
 
-    // POST con no-cors — la risposta è opaca ma la richiesta arriva allo script
-    function postToSheets(payload) {
-      return fetch(SHEETS_URL, {
-        method:  'POST',
-        mode:    'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body:    JSON.stringify(payload)
-      });
-    }
-
-    var toastOk      = document.getElementById('toast-success');
-    var toastErr     = document.getElementById('toast-error');
-    var toastMemoOk  = document.getElementById('toast-memo-success');
-    var toastMemoErr = document.getElementById('toast-memo-error');
-
-    function clearToasts() {
-      toastOk.classList.remove('show');
-      toastErr.classList.remove('show');
-      toastMemoOk.classList.remove('show');
-      toastMemoErr.classList.remove('show');
-    }
-
-    // ── 1. REGISTRA ──
-    var submitBtn     = document.getElementById('submit-btn');
-    var submitText    = document.getElementById('submit-text');
-    var submitIcon    = document.getElementById('submit-icon');
-    var submitSpinner = document.getElementById('submit-spinner');
-
-    document.getElementById('appointment-form').addEventListener('submit', function(e) {
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
       e.preventDefault();
-      clearToasts();
-      submitBtn.disabled = true;
-      submitText.textContent = 'Invio in corso...';
-      submitIcon.style.display = 'none';
-      submitSpinner.style.display = 'inline-block';
-      postToSheets(getSheetPayload())
-        .then(function() {
-          toastOk.classList.add('show');
-          resetForm();
-        })
-        .catch(function(err) {
-          document.getElementById('error-msg').textContent = 'Errore: ' + err.message;
-          toastErr.classList.add('show');
-        })
-        .finally(function() {
-          submitBtn.disabled = false;
-          submitText.textContent = 'Registra appuntamento';
-          submitIcon.style.display = '';
-          submitSpinner.style.display = 'none';
-        });
+      errMsg.classList.remove('show');
+      loginBtn.disabled = true;
+      loginText.style.display = 'none';
+      spinner.style.display = 'inline-block';
+
+      var username = document.getElementById('username').value.trim().toLowerCase();
+      var password = document.getElementById('password').value;
+      var hash     = await sha256(password);
+      var users    = getUsers();
+      var match    = null;
+
+      if (users.length === 0) {
+        // Default credentials if admin hasn't set up users yet
+        var defHash = await sha256('Italbatterie2025!');
+        if (username === 'admin' && hash === defHash) {
+          match = { username: 'admin', role: 'admin' };
+        }
+      } else {
+        match = users.find(function(u) {
+          return u.username.toLowerCase() === username
+              && u.hash === hash
+              && u.active !== false;
+        }) || null;
+      }
+
+      if (match) {
+        sessionStorage.setItem('ib_auth', JSON.stringify({
+          ok: true, user: match.username, role: match.role || 'user',
+          exp: Date.now() + 8 * 60 * 60 * 1000   // sessione 8 ore
+        }));
+        window.location.replace('form.html');
+      } else {
+        errMsg.classList.add('show');
+        loginBtn.disabled = false;
+        loginText.style.display = '';
+        spinner.style.display = 'none';
+      }
     });
-
-    // ── 2. INVIA MEMO ──
-    var memoBtn     = document.getElementById('memo-btn');
-    var memoText    = document.getElementById('memo-text');
-    var memoIcon    = document.getElementById('memo-icon');
-    var memoSpinner = document.getElementById('memo-spinner');
-
-    memoBtn.addEventListener('click', function() {
-      clearToasts();
-      var az = document.getElementById('azienda').value.trim();
-      var em = document.getElementById('email').value.trim();
-      if (!az) {
-        document.getElementById('memo-error-msg').textContent = 'Compila il campo Nome azienda prima di inviare il memo.';
-        toastMemoErr.classList.add('show'); return;
-      }
-      if (!em) {
-        document.getElementById('memo-error-msg').textContent = 'Inserisci un indirizzo email nel campo Email dei dati cliente.';
-        toastMemoErr.classList.add('show'); return;
-      }
-      memoBtn.disabled = true;
-      memoText.textContent = 'Invio in corso...';
-      memoIcon.style.display = 'none';
-      memoSpinner.style.display = 'inline-block';
-      postToSheets(getMemoPayload())
-        .then(function() {
-          toastMemoOk.classList.add('show');
-        })
-        .catch(function(err) {
-          document.getElementById('memo-error-msg').textContent = 'Errore: ' + err.message;
-          toastMemoErr.classList.add('show');
-        })
-        .finally(function() {
-          memoBtn.disabled = false;
-          memoText.textContent = 'Invia memo appuntamento';
-          memoIcon.style.display = '';
-          memoSpinner.style.display = 'none';
-        });
-    });
-
-    // ── 3. REGISTRA + MEMO ──
-    var combinedBtn     = document.getElementById('combined-btn');
-    var combinedText    = document.getElementById('combined-text');
-    var combinedIcon    = document.getElementById('combined-icon');
-    var combinedSpinner = document.getElementById('combined-spinner');
-
-    combinedBtn.addEventListener('click', function() {
-      clearToasts();
-      var az = document.getElementById('azienda').value.trim();
-      var em = document.getElementById('email').value.trim();
-      if (!az) {
-        document.getElementById('error-msg').textContent = 'Compila il campo Nome azienda prima di procedere.';
-        toastErr.classList.add('show'); return;
-      }
-      if (!document.getElementById('data').value) {
-        document.getElementById('error-msg').textContent = 'Seleziona la data appuntamento.';
-        toastErr.classList.add('show'); return;
-      }
-      if (!document.getElementById('ora').value) {
-        document.getElementById('error-msg').textContent = "Inserisci l'ora dell'appuntamento.";
-        toastErr.classList.add('show'); return;
-      }
-      if (!document.getElementById('servizio').value) {
-        document.getElementById('error-msg').textContent = 'Seleziona il tipo di servizio.';
-        toastErr.classList.add('show'); return;
-      }
-      if (!em) {
-        document.getElementById('memo-error-msg').textContent = 'Inserisci un indirizzo email per inviare il memo.';
-        toastMemoErr.classList.add('show'); return;
-      }
-      combinedBtn.disabled = true;
-      submitBtn.disabled   = true;
-      memoBtn.disabled     = true;
-      combinedText.textContent = 'Operazione in corso...';
-      combinedIcon.style.display = 'none';
-      combinedSpinner.style.display = 'inline-block';
-      var memoData = getMemoPayload();
-      postToSheets(getSheetPayload())
-        .then(function() {
-          toastOk.classList.add('show');
-          resetForm();
-          return postToSheets(memoData);
-        })
-        .then(function() {
-          toastMemoOk.classList.add('show');
-        })
-        .catch(function(err) {
-          document.getElementById('memo-error-msg').textContent = 'Errore: ' + err.message;
-          toastMemoErr.classList.add('show');
-        })
-        .finally(function() {
-          combinedBtn.disabled = false;
-          submitBtn.disabled   = false;
-          memoBtn.disabled     = false;
-          combinedText.textContent = 'Registra appuntamento e invia memo';
-          combinedIcon.style.display = '';
-          combinedSpinner.style.display = 'none';
-        });
-    });
-    // Sidebar modello di chiamata
-    function openSidebar() {
-      document.getElementById('script-sidebar').classList.add('open');
-
-    }
-    function closeSidebar() {
-      document.getElementById('script-sidebar').classList.remove('open');
-
-    }
-    document.getElementById('script-btn').addEventListener('click', openSidebar);
-    document.getElementById('script-close').addEventListener('click', closeSidebar);
-    // overlay click disabled — pannello si chiude solo con X
-
   </script>
 </body>
 </html>

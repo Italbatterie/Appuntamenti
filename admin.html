@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Amministrazione — Modulo Appuntamenti</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue:      #00475d;
+      --blue-dark: #003347;
+      --blue-light:#e6f2f5;
+      --accent:    #00b4d8;
+      --white:     #ffffff;
+      --gray-900:  #1c2b30;
+      --gray-700:  #374f56;
+      --gray-500:  #6b8a92;
+      --gray-300:  #c4d5d9;
+      --gray-100:  #eef4f6;
+      --gray-50:   #f7fafb;
+      --success:   #1a7a4a;
+      --success-bg:#e6f5ee;
+      --success-bd:#a8d8bc;
+      --error:     #9b2c2c;
+      --error-bg:  #fdf0f0;
+      --error-bd:  #f5bbbb;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow:    0 4px 24px rgba(0,71,93,0.10);
+    }
+    html, body {
+      min-height: 100vh;
+      background: var(--gray-100);
+      font-family: 'Inter', sans-serif;
+      color: var(--gray-900);
+    }
+    body { padding-bottom: 4rem; }
+
+    .topbar {
+      position: fixed; top:0; left:0; right:0; height:3px;
+      background: linear-gradient(90deg, var(--blue) 0%, var(--accent) 50%, var(--blue) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 3s linear infinite; z-index:100;
+    }
+    @keyframes shimmer { from{background-position:200% 0} to{background-position:-200% 0} }
+
+    /* HEADER */
+    .site-header {
+      background: var(--blue);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 64px; margin-top: 3px;
+    }
+    .header-left { display:flex; align-items:center; gap:14px; }
+    .header-logo {
+      background: var(--white); border-radius: var(--radius-sm);
+      padding: 5px 8px; height:42px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .header-logo img { height:30px; width:auto; }
+    .header-title {
+      font-family:'Inter Tight',sans-serif; font-size:1rem;
+      font-weight:700; color:var(--white);
+    }
+    .header-sub { font-size:0.72rem; color:rgba(255,255,255,0.55); margin-top:2px; }
+    .btn-header {
+      font-size:0.78rem; font-weight:600; font-family:'Inter',sans-serif;
+      color:rgba(255,255,255,0.9); background:rgba(255,255,255,0.12);
+      border:1.5px solid rgba(255,255,255,0.25); border-radius:20px;
+      padding:6px 14px; cursor:pointer; text-decoration:none;
+      transition:background 0.15s;
+    }
+    .btn-header:hover { background:rgba(255,255,255,0.22); }
+
+    /* PAGE */
+    .page { max-width:860px; margin:0 auto; padding:2rem 1.5rem 0; }
+
+    .section-card {
+      background:var(--white); border-radius:var(--radius-lg);
+      box-shadow:var(--shadow); overflow:hidden; margin-bottom:1.5rem;
+      animation: fadeUp 0.3s ease both;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+    .section-head {
+      background:var(--blue); padding:0.9rem 1.5rem;
+      display:flex; align-items:center; gap:10px;
+    }
+    .section-head-title {
+      font-family:'Inter Tight',sans-serif; font-size:0.9rem;
+      font-weight:700; color:var(--white);
+    }
+    .section-body { padding:1.5rem; }
+
+    /* FORM */
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+    .form-row.three { grid-template-columns:1fr 1fr 1fr; }
+    .form-group { display:flex; flex-direction:column; gap:4px; }
+    .form-group.full { grid-column:1/-1; }
+    label {
+      font-size:0.70rem; font-weight:600; color:var(--gray-500);
+      letter-spacing:0.05em; text-transform:uppercase;
+    }
+    input[type="text"], input[type="password"], select {
+      width:100%; padding:8px 11px; font-size:0.88rem;
+      font-family:'Inter',sans-serif;
+      border:1.5px solid var(--gray-300); border-radius:var(--radius-sm);
+      background:var(--gray-50); color:var(--gray-900); outline:none;
+      transition:border-color 0.15s, box-shadow 0.15s;
+      -webkit-appearance:none; appearance:none;
+    }
+    input:focus, select:focus {
+      border-color:var(--blue); background:var(--white);
+      box-shadow:0 0 0 3px rgba(0,71,93,0.10);
+    }
+    .pw-wrap { position:relative; }
+    .pw-wrap input { padding-right:38px; }
+    .pw-toggle {
+      position:absolute; right:10px; top:50%; transform:translateY(-50%);
+      background:none; border:none; cursor:pointer; color:var(--gray-500);
+      padding:2px; display:flex; align-items:center;
+    }
+    .pw-toggle:hover { color:var(--blue); }
+
+    .btn {
+      padding:9px 18px; font-size:0.86rem; font-weight:600;
+      font-family:'Inter',sans-serif; border-radius:var(--radius-md);
+      cursor:pointer; display:inline-flex; align-items:center; gap:7px;
+      transition:background 0.15s, transform 0.1s; border:none;
+    }
+    .btn:active { transform:scale(0.99); }
+    .btn-primary { background:var(--blue); color:var(--white); }
+    .btn-primary:hover { background:var(--blue-dark); }
+    .btn-danger  { background:var(--error-bg); color:var(--error); border:1px solid var(--error-bd); }
+    .btn-danger:hover { background:#fce0e0; }
+    .btn-sm { padding:5px 12px; font-size:0.78rem; }
+
+    /* TABLE */
+    .users-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+    .users-table th {
+      text-align:left; padding:8px 12px;
+      font-size:0.68rem; font-weight:700; letter-spacing:0.1em;
+      text-transform:uppercase; color:var(--blue);
+      border-bottom:2px solid var(--gray-100); background:var(--gray-50);
+    }
+    .users-table td {
+      padding:10px 12px; border-bottom:1px solid var(--gray-100);
+      vertical-align:middle;
+    }
+    .users-table tr:last-child td { border-bottom:none; }
+    .users-table tr:hover td { background:var(--gray-50); }
+    .badge {
+      font-size:0.68rem; font-weight:700; padding:2px 8px;
+      border-radius:20px; display:inline-block;
+    }
+    .badge-admin { background:#e6f2f5; color:var(--blue); }
+    .badge-user  { background:var(--gray-100); color:var(--gray-700); }
+    .badge-off   { background:var(--error-bg); color:var(--error); }
+
+    /* TOAST */
+    .toast {
+      display:none; align-items:center; gap:8px;
+      padding:10px 14px; border-radius:var(--radius-md);
+      margin-top:12px; font-size:0.83rem; font-weight:500;
+      border:1px solid; animation:fadeUp 0.2s ease both;
+    }
+    .toast.show   { display:flex; }
+    .toast.success { background:var(--success-bg); color:var(--success); border-color:var(--success-bd); }
+    .toast.error   { background:var(--error-bg);   color:var(--error);   border-color:var(--error-bd); }
+
+    .hint { font-size:0.75rem; color:var(--gray-500); margin-top:6px; line-height:1.5; }
+
+    @media (max-width:600px) {
+      .form-row, .form-row.three { grid-template-columns:1fr; }
+      .form-group.full { grid-column:1; }
+      .site-header { padding:0 1rem; }
+      .page { padding:1.5rem 0.75rem 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar"></div>
+
+  <header class="site-header">
+    <div class="header-left">
+      <div class="header-logo">
+        <img src="Logo_Nuovo.png" alt="Italbatterie" onerror="this.style.display='none'"/>
+      </div>
+      <div>
+        <div class="header-title">Pannello Amministrazione</div>
+        <div class="header-sub">Gestione utenti e accessi</div>
+      </div>
+    </div>
+    <a href="index.html" class="btn-header">← Torna al login</a>
+  </header>
+
+  <div class="page">
+
+    <!-- ACCESS GUARD -->
+    <div id="admin-guard" style="display:none;padding:3rem;text-align:center;color:var(--error)">
+      <strong>Accesso negato.</strong> Solo gli amministratori possono accedere a questa pagina.
+      <br><br><a href="index.html" style="color:var(--blue)">Torna al login</a>
+    </div>
+
+    <div id="admin-content" style="display:none">
+
+      <!-- ADD / EDIT USER -->
+      <div class="section-card">
+        <div class="section-head">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <circle cx="7.5" cy="5" r="3" stroke="white" stroke-width="1.5"/>
+            <path d="M2 13c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span class="section-head-title" id="form-title">Aggiungi utente</span>
+        </div>
+        <div class="section-body">
+          <div class="form-row three">
+            <div class="form-group">
+              <label for="new-user">Nome utente</label>
+              <input type="text" id="new-user" placeholder="es. segreteria"/>
+            </div>
+            <div class="form-group">
+              <label for="new-pass">Password</label>
+              <div class="pw-wrap">
+                <input type="password" id="new-pass" placeholder="Min. 8 caratteri"/>
+                <button type="button" class="pw-toggle" onclick="togglePw('new-pass',this)" tabindex="-1">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.4"/>
+                    <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.4"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="new-role">Ruolo</label>
+              <select id="new-role">
+                <option value="user">Utente</option>
+                <option value="admin">Amministratore</option>
+              </select>
+            </div>
+          </div>
+          <input type="hidden" id="edit-index" value="-1"/>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
+            <button class="btn btn-primary" onclick="saveUser()">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7l3.5 3.5L12 3" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span id="save-btn-text">Salva utente</span>
+            </button>
+            <button class="btn" style="background:var(--gray-100);color:var(--gray-700)" onclick="cancelEdit()">
+              Annulla
+            </button>
+          </div>
+          <div class="toast" id="toast-add"></div>
+        </div>
+      </div>
+
+      <!-- USERS LIST -->
+      <div class="section-card">
+        <div class="section-head">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <path d="M2 4h11M2 7.5h11M2 11h11" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span class="section-head-title">Utenti configurati</span>
+        </div>
+        <div class="section-body" style="padding:0">
+          <div id="users-empty" style="padding:2rem;text-align:center;color:var(--gray-500);font-size:0.85rem">
+            Nessun utente configurato — verrà usato l'accesso predefinito.
+          </div>
+          <table class="users-table" id="users-table" style="display:none">
+            <thead>
+              <tr>
+                <th>Utente</th>
+                <th>Ruolo</th>
+                <th>Stato</th>
+                <th>Azioni</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DEFAULT CREDENTIALS INFO -->
+      <div class="section-card">
+        <div class="section-head">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <circle cx="7.5" cy="7.5" r="6" stroke="white" stroke-width="1.5"/>
+            <path d="M7.5 5v4M7.5 11v.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span class="section-head-title">Credenziali predefinite</span>
+        </div>
+        <div class="section-body">
+          <p class="hint">
+            Finché non vengono configurati utenti, è attivo l'accesso predefinito:<br>
+            <strong>Utente:</strong> <code>admin</code> &nbsp;|&nbsp;
+            <strong>Password:</strong> <code>Italbatterie2025!</code><br><br>
+            ⚠️ Si consiglia di creare subito almeno un utente amministratore con password personalizzata e di non usare le credenziali predefinite in produzione.
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /admin-content -->
+  </div>
+
+  <script>
+    // SHA-256 via SubtleCrypto
+    async function sha256(str) {
+      var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf))
+        .map(function(b) { return b.toString(16).padStart(2,'0'); }).join('');
+    }
+
+    // Toggle password visibility
+    function togglePw(id, btn) {
+      var inp = document.getElementById(id);
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    // Auth guard — only admins
+    (function() {
+      try {
+        var s = JSON.parse(sessionStorage.getItem('ib_auth') || 'null');
+        if (s && s.ok && Date.now() < s.exp && s.role === 'admin') {
+          document.getElementById('admin-content').style.display = 'block';
+          renderUsers();
+          return;
+        }
+        // Check default admin
+        var users = JSON.parse(localStorage.getItem('ib_users') || '[]');
+        if (users.length === 0 && s && s.ok && s.user === 'admin') {
+          document.getElementById('admin-content').style.display = 'block';
+          renderUsers();
+          return;
+        }
+      } catch(e) {}
+      document.getElementById('admin-guard').style.display = 'block';
+    })();
+
+    function getUsers() {
+      try { return JSON.parse(localStorage.getItem('ib_users') || '[]'); }
+      catch(e) { return []; }
+    }
+    function saveUsers(arr) {
+      localStorage.setItem('ib_users', JSON.stringify(arr));
+    }
+
+    function renderUsers() {
+      var users  = getUsers();
+      var tbody  = document.getElementById('users-tbody');
+      var table  = document.getElementById('users-table');
+      var empty  = document.getElementById('users-empty');
+
+      if (users.length === 0) {
+        table.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+      }
+      table.style.display = 'table';
+      empty.style.display = 'none';
+      tbody.innerHTML = '';
+
+      users.forEach(function(u, i) {
+        var tr = document.createElement('tr');
+        var active = u.active !== false;
+        tr.innerHTML =
+          '<td><strong>' + escHtml(u.username) + '</strong></td>' +
+          '<td><span class="badge badge-' + (u.role === 'admin' ? 'admin' : 'user') + '">' +
+            (u.role === 'admin' ? 'Amministratore' : 'Utente') + '</span></td>' +
+          '<td><span class="badge ' + (active ? 'badge-user' : 'badge-off') + '">' +
+            (active ? 'Attivo' : 'Disabilitato') + '</span></td>' +
+          '<td style="display:flex;gap:6px;flex-wrap:wrap">' +
+            '<button class="btn btn-sm btn-primary" onclick="editUser(' + i + ')">Modifica</button>' +
+            '<button class="btn btn-sm" style="background:var(--gray-100);color:var(--gray-700)" onclick="toggleActive(' + i + ')">' +
+              (active ? 'Disabilita' : 'Abilita') + '</button>' +
+            '<button class="btn btn-sm btn-danger" onclick="deleteUser(' + i + ')">Elimina</button>' +
+          '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function showToast(id, type, msg) {
+      var el = document.getElementById(id);
+      el.className = 'toast show ' + type;
+      el.innerHTML = msg;
+      setTimeout(function() { el.className = 'toast'; }, 3500);
+    }
+
+    async function saveUser() {
+      var username  = document.getElementById('new-user').value.trim().toLowerCase();
+      var password  = document.getElementById('new-pass').value;
+      var role      = document.getElementById('new-role').value;
+      var editIndex = parseInt(document.getElementById('edit-index').value);
+
+      if (!username) { showToast('toast-add','error','Inserisci un nome utente.'); return; }
+      if (editIndex === -1 && password.length < 8) {
+        showToast('toast-add','error','La password deve essere di almeno 8 caratteri.'); return;
+      }
+
+      var users = getUsers();
+
+      // Check duplicate username (excluding current if editing)
+      var dup = users.find(function(u, i) {
+        return u.username.toLowerCase() === username && i !== editIndex;
+      });
+      if (dup) { showToast('toast-add','error','Nome utente già esistente.'); return; }
+
+      if (editIndex === -1) {
+        // New user
+        var hash = await sha256(password);
+        users.push({ username: username, hash: hash, role: role, active: true });
+        showToast('toast-add','success','✓ Utente <strong>' + escHtml(username) + '</strong> aggiunto.');
+      } else {
+        // Edit existing
+        users[editIndex].username = username;
+        users[editIndex].role     = role;
+        if (password.length >= 8) {
+          users[editIndex].hash = await sha256(password);
+        }
+        showToast('toast-add','success','✓ Utente <strong>' + escHtml(username) + '</strong> aggiornato.');
+        cancelEdit();
+      }
+
+      saveUsers(users);
+      renderUsers();
+      document.getElementById('new-user').value = '';
+      document.getElementById('new-pass').value = '';
+      document.getElementById('new-role').value = 'user';
+    }
+
+    function editUser(i) {
+      var users = getUsers();
+      var u = users[i];
+      document.getElementById('new-user').value  = u.username;
+      document.getElementById('new-pass').value  = '';
+      document.getElementById('new-role').value  = u.role || 'user';
+      document.getElementById('edit-index').value = i;
+      document.getElementById('form-title').textContent = 'Modifica utente';
+      document.getElementById('save-btn-text').textContent = 'Aggiorna utente';
+      document.getElementById('new-user').focus();
+    }
+
+    function cancelEdit() {
+      document.getElementById('new-user').value  = '';
+      document.getElementById('new-pass').value  = '';
+      document.getElementById('new-role').value  = 'user';
+      document.getElementById('edit-index').value = -1;
+      document.getElementById('form-title').textContent = 'Aggiungi utente';
+      document.getElementById('save-btn-text').textContent = 'Salva utente';
+    }
+
+    function toggleActive(i) {
+      var users = getUsers();
+      users[i].active = !(users[i].active !== false);
+      saveUsers(users);
+      renderUsers();
+    }
+
+    function deleteUser(i) {
+      if (!confirm('Eliminare questo utente?')) return;
+      var users = getUsers();
+      users.splice(i, 1);
+      saveUsers(users);
+      renderUsers();
+    }
+  </script>
+</body>
+</html>
