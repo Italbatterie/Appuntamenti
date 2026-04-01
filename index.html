@@ -748,7 +748,6 @@
   </div>
 
   <!-- SIDEBAR MODELLO DI CHIAMATA -->
-  <div class="sidebar-overlay" id="script-overlay"></div>
   <div class="sidebar" id="script-sidebar">
     <div class="sidebar-header">
       <div class="sidebar-title">
@@ -1022,15 +1021,15 @@
     // Sidebar modello di chiamata
     function openSidebar() {
       document.getElementById('script-sidebar').classList.add('open');
-      document.getElementById('script-overlay').classList.add('open');
+
     }
     function closeSidebar() {
       document.getElementById('script-sidebar').classList.remove('open');
-      document.getElementById('script-overlay').classList.remove('open');
+
     }
     document.getElementById('script-btn').addEventListener('click', openSidebar);
     document.getElementById('script-close').addEventListener('click', closeSidebar);
-    document.getElementById('script-overlay').addEventListener('click', closeSidebar);
+    // overlay click disabled — pannello si chiude solo con X
 
   </script>
 </body>
