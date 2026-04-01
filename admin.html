@@ -270,7 +270,7 @@
         </div>
         <div class="section-body" style="padding:0">
           <div id="users-empty" style="padding:2rem;text-align:center;color:var(--gray-500);font-size:0.85rem">
-            Nessun utente configurato — verrà usato l'accesso predefinito.
+            Nessun utente configurato - verra usato l'accesso predefinito.
           </div>
           <table class="users-table" id="users-table" style="display:none">
             <thead>
@@ -324,7 +324,7 @@
       inp.type = inp.type === 'password' ? 'text' : 'password';
     }
 
-    // Auth guard — token passed via URL from form.html
+    // Auth guard - token passed via URL from form.html
     (function() {
       try {
         var urlToken = new URLSearchParams(window.location.search).get('t');
@@ -375,7 +375,7 @@
       var tbody = document.getElementById('users-tbody');
       var table = document.getElementById('users-table');
       var empty = document.getElementById('users-empty');
-      empty.textContent = 'Caricamento utenti…';
+      empty.textContent = 'Caricamento utenti...';
       empty.style.display = 'block';
       table.style.display = 'none';
 
@@ -393,7 +393,7 @@
       }
 
       if (cachedUsers.length === 0) {
-        empty.textContent = 'Nessun utente configurato — verrà usato l'accesso predefinito.';
+        empty.textContent = 'Nessun utente configurato - verra usato l\'accesso predefinito.';
         empty.style.display = 'block';
         table.style.display = 'none';
         return;
@@ -449,7 +449,7 @@
           username: username, hash: hash, role: role, editIndex: editIndex
         });
         if (json.success) {
-          showToast('toast-add','success','✓ Utente <strong>' + escHtml(username) + '</strong> salvato.');
+          showToast('toast-add','success','OK Utente <strong>' + escHtml(username) + '</strong> salvato.');
           cancelEdit();
           renderUsers();
         } else {
